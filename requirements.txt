@@ -1,0 +1,10 @@
+###### Requirements without Version Specifiers ######
+dash
+pandas
+numpy
+scipy
+dash-bootstrap-components
+matplotlib
+seaborn
+sklearn
+statsmodels 

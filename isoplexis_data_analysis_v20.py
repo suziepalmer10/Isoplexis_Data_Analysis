@@ -1,4 +1,3 @@
-#Version20
 ##required packages
 import dash
 from dash.dependencies import Input, Output
@@ -10,7 +9,6 @@ from itertools import chain
 import plotly.figure_factory as ff
 import scipy
 import dash_bootstrap_components as dbc
-from skimage import io
 import numpy as np 
 from statsmodels.stats.proportion import proportions_ztest
 from scipy.stats import ks_2samp
@@ -31,8 +29,8 @@ def uploadFile(Path_):
     return(df)
 #file to upload
 #df_ = uploadFile("/Users/suziepalmer/Desktop/IsoplexisV9/data.csv")
-#df_ = uploadFile("/Users/suziepalmer/Desktop/IsoplexisV9/ABX_ICT_TDLN_121221_CD3+_raw_data.csv")
-df_ = uploadFile("/Users/suziepalmer/Desktop/IsoplexisV9/WT_ABX_MLN_T_Cell_CD4+_CD8+_raw_data.csv")
+#df_ = uploadFile("/home2/s180020/Desktop/IsoplexisData/ABX_ICT_TDLN_121221_CD3+_raw_data.csv")
+df_ = uploadFile("/home2/s180020/Desktop/IsoplexisData/WT_ABX_MLN_T_Cell_CD4+_CD8+_raw_data.csv")
 
 #this is the original cytokine list
 cyto_list = ['BCA-1', 'CCL-11', 'FAS', 'GM-CSF', 'Granzyme B', 
@@ -120,10 +118,10 @@ def non_zero_prop_table(df, subtypes):
 df_val = non_zero_prop_table(df_, "Treatment Conditions")
 ###this reformats the NZ Proportions dataframe, so that the bar graph can be produced
 df_edit =pd.melt(df_val, id_vars=["Cytokines"],var_name='Treatment Conditions', 
-                 value_name = 'Percent Cytokine Secreting')
+                 value_name = 'Percent Cytokines Secreting')
 ###This plots all of the Cytokines
 bar_ALL = px.bar(df_edit, x="Cytokines", color="Treatment Conditions",
-    y='Percent Cytokine Secreting',
+    y='Percent Cytokines Secreting',
     #title="Non-Zero Proportions for all Isoplexis Cytokines",
     barmode='group', color_discrete_map = color_discrete_map,
     height=500)
@@ -210,7 +208,7 @@ app.layout = html.Div(
         ##row 8 - NZ Proportions bar graph for all cytokines
         dbc.Row([
             dbc.Col(html.Div([
-        html.H4("Percent Cytokine Secreting Across All Cytokines", style={'textAlign': 'center'}),
+        html.H4("Percent Cytokines Secreting Across All Cytokines", style={'textAlign': 'center'}),
         dcc.Graph(figure=bar_ALL)]))]),
         ##row 9 - line
         dbc.Row([dbc.Col(html.Div(html.Hr()), width={"size": 8, "offset":2})]),
@@ -304,7 +302,7 @@ app.layout = html.Div(
                     value=unique_variables[1], clearable=False),
         html.P(" "),
         # NZ Proportion Stats Call
-        html.P(dcc.Markdown('''**Percent Cytokine Secreting - Proportion Test**
+        html.P(dcc.Markdown('''**Percent Cytokines Secreting - Proportion Test**
         '''), style={'textAlign': 'center'}),
         html.Div(id='stats_nz', style={'textAlign': 'center'}),
         html.Div( id='p_val_nz', style={'textAlign': 'center'}),
@@ -367,7 +365,6 @@ app.layout = html.Div(
 
 def pca_func(method):
     x = df_[cyto_list]
-    features = x.columns
     x = x.to_numpy()
     Y = df_['Treatment Conditions']
     Y.to_frame()
@@ -379,13 +376,13 @@ def pca_func(method):
         Xt = pca.fit_transform(x)
     df = pd.DataFrame(Xt)
     df['Treatment Conditions'] = Y
-    fig = px.scatter(df, x=0, y=1, color="Treatment Conditions", color_discrete_map = color_discrete_map, 
-                    )
+    fig = px.scatter(df, x=0, y=1, color="Treatment Conditions", color_discrete_map = color_discrete_map)
     fig.update_layout(title_text = method+" PCA", title_x=0.5, )
     fig.update_layout(plot_bgcolor='rgb(255,255,255)')
     fig.update_xaxes(title_text='PCA 1')
     fig.update_yaxes(title_text='PCA 2') 
     return(fig)
+
 #callback tsne function
 @app.callback(Output('ts_dim_red_fig', 'figure'),
               [Input('method_radio1', 'value')],
@@ -394,7 +391,6 @@ def pca_func(method):
 
 def tsne_func(method, perplexity_, iterations_):
     x = df_[cyto_list]
-    features = x.columns
     x = x.to_numpy()
     Y = df_['Treatment Conditions']
     Y.to_frame()
@@ -414,6 +410,7 @@ def tsne_func(method, perplexity_, iterations_):
     fig.update_xaxes(title_text='TSNE 1')
     fig.update_yaxes(title_text='TSNE 2') 
     return(fig)
+
 #callback: all cytokine dendrogram
 @app.callback(Output('graph_dendro_all', 'figure'),
               [Input('dropdown_cyto_hm_all', 'value')])
@@ -451,6 +448,7 @@ def dendrogram(option, data):
     fig.update_xaxes(ticks="", showticklabels=False,)
     fig.update_xaxes(showticklabels=True)
     return(fig)
+
 #call back: all cytokine heatmap
 @app.callback(Output('graph_hm_all', 'figure'),
               [Input('dropdown_cyto_hm_all', 'value')])
@@ -466,7 +464,7 @@ def sub_heatmap(option):
     color_ = colors_list_heat[index]
     fig = df_heatmap(df_cluster, color_)
     fig.update_layout(title_text= "Clustered Heatmap for All Cytokines", title_x=0.5)
-    fig.update_layout(width=700, height=700)
+    fig.update_layout(width=700, height=700),
     return(fig)
 
 def df_heatmap(df, color):
@@ -491,19 +489,21 @@ def df_heatmap(df, color):
     df_cluster_cyto_arr = df_cluster_cyto.to_numpy()
     data=df_cluster_cyto_arr
     heatmap = px.imshow(data,
-            labels=dict(x="Cytokines", y="Cells", color="Value"),
+            labels=dict(x="Cytokines", y="Cell Id", color="Value"),
                 x=after_dendro_cluster ,
                 y= index_pos_cells,
                 #color_continuous_scale='Greys'
                 color_continuous_scale=["white", color])
     heatmap.update_xaxes(side="bottom")
     return(heatmap)
+
 #callback for individual cytokine dropdown and heatmap dropdown
 @app.callback(
     dash.dependencies.Output('heatmap_dropdown', 'options'),
     [dash.dependencies.Input('dropdown', 'value')])
 def cytokine_callback(selected_cytokine):   
     return [{'label': i, 'value': i} for i in cytokine_dictionary[selected_cytokine]]
+
 #call back for heatmap 
 @app.callback(
     dash.dependencies.Output('graph4', 'figure'),
@@ -520,6 +520,7 @@ def sub_heatmap_cyto(cytokine, option):
     fig = df_heatmap(df_cluster, color_)
     fig.update_layout(title_text=cytokine + " Clustered Heatmap", title_x=0.5)
     return(fig)
+
 #callback for individual dendrogram 
 @app.callback(
     dash.dependencies.Output('dendro_sub', 'figure'),
@@ -532,6 +533,7 @@ def sub_dendro_cyto(cytokine, option):
     fig.update_layout(title_text= cytokine + " Hierarchial Clustered Dendrogram", title_x=0.5)
     fig.update_layout(plot_bgcolor='rgb(255,255,255)')
     return(fig)
+
 #callback bargraph
 @app.callback(
     dash.dependencies.Output("graph1", "figure"),
@@ -540,13 +542,14 @@ def sub_dendro_cyto(cytokine, option):
 def update_bar_chart(cytokine):
     df = df_edit
     mask = df["Cytokines"] == cytokine
-    fig = px.bar(df[mask], x="Treatment Conditions", y="Percent Cytokine Secreting", 
+    fig = px.bar(df[mask], x="Treatment Conditions", y="Percent Cytokines Secreting", 
         color="Treatment Conditions", color_discrete_map = color_discrete_map, barmode="group",
         #title = cytokine + " Non-Zero Proportions", 
         text_auto = True)
-    fig.update_layout(title_text=cytokine + " Percent Cytokine Secreting", title_x=0.5)
+    fig.update_layout(title_text=cytokine + " Percent Cytokines Secreting", title_x=0.5)
     fig.update_layout(plot_bgcolor='rgb(255,255,255)')
     return fig
+
 #callback - individual cytokine histogram
 @app.callback(
     dash.dependencies.Output('graph2', 'figure'),
@@ -563,6 +566,7 @@ def display_graph(cytokine, distribution, bins_):
     fig.update_layout(title_text=cytokine + " Histogram", title_x=0.5)
     fig.update_layout(plot_bgcolor='rgb(255,255,255)')
     return fig
+
 #callback - individual cytokine density plot
 @app.callback(
     dash.dependencies.Output('graph3', 'figure'),
@@ -588,7 +592,7 @@ def dist_plot_graph(cytokine):
     fig.update_layout(plot_bgcolor='rgb(255,255,255)')
     return(fig)
 
-#callback Non-zero Proportion function - known as "cytokine secreting"
+#callback Non-zero Proportion function - known as "cytokines secreting"
 @app.callback(
     [dash.dependencies.Output('stats_nz', 'children'),
     dash.dependencies.Output('p_val_nz', 'children')],
@@ -610,11 +614,12 @@ def nz_prop_test(cytokine, match1, match2):
     successes = np.array([non_zero_sum_1, non_zero_sum_2])
     samples = np.array([len_t1, len_t2])
     stat_1, p_value_1 = proportions_ztest(count=successes, nobs=samples,  alternative='two-sided')
-    stat_ = '{0:.2f}'.format(stat_1)
+    stat_ = f"{stat_1:.4e}"
     stat_ = "Non-Zero Proportion Z Statistic: " + str(stat_)
-    p_value_ = '{0:.2f}'.format(p_value_1)
+    p_value_ = f"{p_value_1:.4e}"
     p_value_ = "Non-Zero Proportion P-Value: " + str(p_value_)
     return(stat_, p_value_)
+
 #callback statistics
 @app.callback(
     [dash.dependencies.Output('stats_ks', 'children'),
@@ -627,9 +632,9 @@ def all_prop_test(cytokine, match1, match2):
     comp_1 = df_.loc[df_['Treatment Conditions'] == match1, cytokine].to_list()
     comp_2 = df_.loc[df_['Treatment Conditions'] == match2, cytokine].to_list()
     stat_1, p_value_1 = ks_2samp(comp_1, comp_2)
-    stat_ = '{0:.2f}'.format(stat_1)
+    stat_ = f"{stat_1:.4e}"
     stat_ = "KS-Test Proportion Z Statistic: " + str(stat_)
-    p_value_ = '{0:.2f}'.format(p_value_1)
+    p_value_ = f"{p_value_1:.4e}"
     p_value_ = "KS-Test Proportion P-Value: " + str(p_value_)
     return(stat_, p_value_)
 
@@ -651,32 +656,32 @@ def cyto_stats(cytokine, condition):
     #Across all samples and Treatment Conditions
     #Number of cells for cytokine with non-zero values
     value_sum_1 = (comp_1 != 0).sum()
-    value_sum = '{0:.0f}'.format(value_sum_1)
+    value_sum = f"{value_sum_1:.4e}"
     value_sum = "Number of Cells With Values: " + str(value_sum)
     #Number of cells for cytokine with zero values
     zero_sum_1 = (comp_1 == 0).sum()
-    zero_sum = '{0:.0f}'.format(zero_sum_1)
+    zero_sum = f"{zero_sum_1:.4e}"
     zero_sum = "Number of Cells with No Values: " + str(zero_sum)
     #mean of all cells across cytokine
     mean_df_all_1 = comp_1.mean()
-    mean_df_all = '{0:.2f}'.format(mean_df_all_1)
+    mean_df_all = f"{mean_df_all_1:.4e}"
     std_df_all_1 = comp_1.std()
-    std_df_all = '{0:.2f}'.format(std_df_all_1)
+    std_df_all = f"{std_df_all_1:.4e}"
     mean_std_all = "Mean and Standard Deviation Across All Cells: " + str(mean_df_all)+ " and " + str(std_df_all)
     min_df_all_1 = comp_1.min()
-    min_df_all = '{0:.2f}'.format( min_df_all_1)
+    min_df_all = f"{min_df_all_1:.4e}"
     max_df_all_1 = comp_1.max()
-    max_df_all = '{0:.2f}'.format( max_df_all_1)
+    max_df_all = f"{max_df_all_1:.4e}"
     min_max_all = "Minimum and Maximum Values Across All Cells: " + str(min_df_all)+ " and " + str(max_df_all)
     #stats of Non-zero cells across cytokine
     mean_df_nz_1 = comp_1[comp_1!= 0].mean()
-    mean_df_nz = '{0:.2f}'.format(mean_df_nz_1)
+    mean_df_nz = f"{mean_df_nz_1:.4e}"
     std_df_nz_1 = comp_1[comp_1!= 0].std()
-    std_df_nz = '{0:.2f}'.format(std_df_nz_1)
+    std_df_nz = f"{std_df_nz_1:.4e}"
     min_df_nz_1 = comp_1[comp_1!= 0].min()
-    min_df_nz = '{0:.2f}'.format(min_df_nz_1)
+    min_df_nz = f"{min_df_nz_1:.4e}"
     max_df_nz_1 = comp_1[comp_1!= 0].max()
-    max_df_nz = '{0:.2f}'.format(max_df_nz_1)
+    max_df_nz =  f"{max_df_nz_1:.4e}"
     mean_std_nz = "Mean and Standard Deviation Across All Non-Zero Cells: " + str(mean_df_nz)+ " and " + str(std_df_nz)
     min_max_nz = "Minimum and Maximum Values Across All Non-Zero Cells: " + str(min_df_nz)+ " and " + str(max_df_nz)
     return(value_sum, zero_sum, mean_std_all, min_max_all, mean_std_nz, min_max_nz)

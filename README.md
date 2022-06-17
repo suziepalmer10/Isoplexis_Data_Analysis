@@ -45,7 +45,7 @@ python -m pip install -r requirements.txt
 
 ```
 module add python/3.8.x-anaconda
-source activate isoplexis
+conda activate isoplexis
 
 ```
 

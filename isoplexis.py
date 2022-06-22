@@ -122,8 +122,16 @@ def parse_contents(contents, filename, date):
         html.Div(html.Button(id="analysis-button", children="Analyze Isoplexis Data"), style = {'textAlign': 'left'}),
         html.P('Note: If you decide to reorder your data after selecting the analysis button, you will need to repeat steps 3 and 4 again.',
         style = {'textAlign': 'left'}),
-        #dcc.Store(id = 'color_discrete_map', data = color_discrete_map)
-        
+        html.H4("Step 5: To view individual cytokine analysis, select a cytokine from this list below.", style={'textAlign': 'left'}),
+        html.P("Note: each analysis page has a section to view individual cytokines. If the cytokine has no value, it will not appear on this list.", style={'textAlign': 'left'}),
+        html.Div(dcc.Dropdown(
+        id='indiv_cyto_dropdown',
+        placeholder="Select a cytokine for individual cytokine analysis",
+        clearable=False),
+        style={"width": "50%"}),
+
+        html.Div(html.Button(id="indiv-cyto-button", children="Analyze Individual Cytokine"), style = {'textAlign': 'left'}),
+        html.P("In order to change individual cytokine, select desired cytokine from the dropdown menu and click 'Analyze Individual Cytokine' button again.", style = {'textAlign': 'left'})
 
     ])
 
@@ -192,7 +200,6 @@ def cyto_secretion_list(val):
         return cyto_list
 
 
-
 @app.callback(Output('stored-data-reordered', 'data'),
             Input('submit-button','n_clicks'),
             State('ordered_list', 'value'),
@@ -226,26 +233,62 @@ def discrete_color(n, selected_permutation):
         return no_update
     else: 
         #this makes sure colors are the same for bar plots, density and histogram
-        #color schemes used for the bar plots, density, histogram
-        #"blue", "red", "gray", "green", "yellow", "teal", "purple", "black"
-        # colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(128, 128, 128)', 'rgb(0, 128, 0)', 
-        #             'rgb(255, 255, 0)', 'rgb(0, 128, 128)', 'rgb(128, 0, 128)', 'rgb(0, 0, 0)']
-        colors = px.colors.sequential.thermal_r
+        #better separation of colors - uses the thermal palette
+        colors = ['rgb(3, 35, 51)', 
+        #'rgb(13, 48, 100)', 
+        'rgb(53, 50, 155)', 
+        #'rgb(93, 62, 153)', 
+        'rgb(126, 77, 143)', 
+        #'rgb(158, 89, 135)', 
+        'rgb(193, 100, 121)', 
+        #'rgb(225, 113, 97)', 
+        'rgb(246, 139, 69)', 
+        #'rgb(251, 173, 60)', 
+        'rgb(246, 211, 70)', 
+        #'rgb(231, 250, 90)'
+        ]
         colors_for_plot = colors[:len(selected_permutation)]
         color_discrete_map = {selected_permutation[i]: colors_for_plot[i] for i in range(len(selected_permutation))}
         return color_discrete_map
 
+@app.callback(
+    Output('indiv_cyto_dropdown', 'options'),
+    Input('submit-button','n_clicks'),
+    Input('indiv-cyto-button','n_clicks'),
+    State('cyto_list', 'data'),
+    State('ordered_list', 'value'),
+    State('stored-data-reordered', 'data'))
 
-    
-# will need to create a dynamic app callback to calculate the edited cytokines
-# ##create an edited cytokine list for dropdown 
-# ##columns with no values will be removed
-# edit_cyto_list = []
-# for i in cyto_list:
-#     if df_[i].sum() == 0:
-#         continue
-#     else: 
-#         edit_cyto_list.append(i)
+def individual_cyto_callback(n, m, cyto_list, selected_cytokine, df):
+    if (n is None) and (m is None): 
+        return no_update
+
+    else: 
+        df = pd.DataFrame(df)
+        ##create an edited cytokine list for dropdown 
+        ##columns with no values will be removed
+        edit_cyto_list = []
+        for i in cyto_list:
+            if df[i].sum() == 0:
+                continue
+            else: 
+                edit_cyto_list.append(i)
+        ###create dictionary for dynamic callbacks for dendrogram and heatmap
+        heatmap_dictionary = []
+        for cytokine in edit_cyto_list:
+            small_list = ["All"]
+            for i in selected_cytokine: 
+                sub_vals  = df.loc[df["Treatment Conditions"] == i, cytokine]
+                if sub_vals.sum() != 0:
+                    #not sure if either or both is needed for this 
+                    small_list.append(i)
+            heatmap_dictionary.append(small_list)
+        # using dictionary comprehension to convert lists to dictionary
+        #main dictionary used for the callbacks. 
+        cytokine_dictionary = {edit_cyto_list[i]: heatmap_dictionary[i] for i in range(len(edit_cyto_list))}
+        options=[{'label': k, 'value': k} for k in cytokine_dictionary.keys()]
+        return options
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)

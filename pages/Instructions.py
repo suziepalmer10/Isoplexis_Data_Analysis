@@ -37,14 +37,11 @@ layout = html.Div(
 
 def col_row_check (n, cyto_list, df):
     if n is None: 
-        #return no_update
         raise PreventUpdate
     else:
         df = pd.DataFrame(df)
-        for i in df["Treatment Conditions"].unique():
-            df_sub = df[df["Treatment Conditions"] == i]
-            df_sub_1 = df_sub[cyto_list].T
-            row, col = df_sub_1.shape           
+        df_sub = df[cyto_list].T
+        row, col = df_sub.shape           
         numCytokines = 'Number of Cytokines: ' + str(row)
         numCells = 'Number of Cells: ' + str(col)
         iso_stats_header = 'Isoplexis Data Analysis'

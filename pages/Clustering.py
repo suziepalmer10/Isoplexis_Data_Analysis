@@ -97,7 +97,7 @@ def dendrogram(n, cyto_list, option, data):
             numpy_array = df_sub.T.to_numpy()
             #numpy_array.shape
             fig = ff.create_dendrogram(numpy_array, orientation='bottom', labels=col_names,
-                                colorscale =  px.colors.sequential.thermal)
+                                colorscale=  px.colors.sequential.Reds_r)
             fig.update_yaxes(showticklabels=False, ticks="")
             fig.update_xaxes(ticks="", showticklabels=False,)
             fig.update_xaxes(showticklabels=True)
@@ -126,6 +126,7 @@ def sub_heatmap(n, cyto_list, option, df):
             fig = df_heatmap(n, cyto_list, df)
             fig.update_layout(title_text= "Clustered Heatmap for All Cytokines", title_x=0.5)
             fig.update_layout(width=700, height=700)
+            fig.update_yaxes(title_text='Original Cell ID')
             return(fig)
     except:
         return no_update
@@ -156,7 +157,7 @@ def df_heatmap(n, cyto_list, df):
             df_cluster_cyto = df.reindex(columns=after_dendro_cluster)
             data = df_cluster_cyto.to_numpy()
             heatmap = go.Heatmap(z=data, x=after_dendro_cluster, y= str_index_pos_cells, showscale=True, 
-            colorscale = 'Thermal', colorbar = dict(title='Value'),
+            colorscale = px.colors.sequential.Reds, colorbar = dict(title='Value'),
             hovertemplate='Cytokine: %{x}<br>Original Cell ID: %{y}<br>Value: %{z}<extra></extra>')
             fig = go.Figure(heatmap)
             return(fig)
@@ -204,4 +205,5 @@ def sub_heatmap_cyto(n, cytokine, cyto_list,  option, df):
         fig =df_heatmap(n, cyto_list, df_cluster)
         fig.update_layout(title_text=cytokine + " Clustered Heatmap", title_x=0.5)
         fig.update_layout(width=700, height=700)
+        fig.update_yaxes(title_text='Original Cell ID')
         return(fig)

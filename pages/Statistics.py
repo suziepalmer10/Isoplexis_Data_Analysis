@@ -102,7 +102,8 @@ layout = html.Div(
 @callback(
     Output('stat_options', 'options'),
     Input('analysis-button','n_clicks'),
-    State('ordered_list', 'value'))
+    State('ordered_list', 'value'),
+)
 def histdendro_all_callback(n, selected_cytokine):
     try: 
         if n is None: 
@@ -116,7 +117,8 @@ def histdendro_all_callback(n, selected_cytokine):
 @callback(
     Output('option_1_stat', 'options'),
     Input('analysis-button','n_clicks'),
-    State('ordered_list', 'value'))
+    State('ordered_list', 'value'),
+)
 def treatment_all_callback1(n, selected_cytokine): 
     try:
         if n is None: 
@@ -131,7 +133,8 @@ def treatment_all_callback1(n, selected_cytokine):
 @callback(
     Output('option_2_stat', 'options'),
     Input('analysis-button','n_clicks'),
-    State('ordered_list', 'value'))
+    State('ordered_list', 'value'),
+)
 def treatment_all_callback2(n, selected_cytokine): 
     try:
         if n is None: 
@@ -264,7 +267,8 @@ def all_prop_test(n, cytokine, match1, match2, df):
             Input('analysis-button','n_clicks'),
             Input('cyto_list', 'data'),
             State ('stored-data-reordered', 'data'),
-            State ('color_discrete_map', 'data'))
+            State ('color_discrete_map', 'data'),
+)
 
 #Non-zero Proportions Graph for All Cytokines
 #this produces a NZ Proportion dataframe
@@ -383,4 +387,6 @@ def dist_plot_graph(n, cytokine, df, color_discrete_map):
         fig = ff.create_distplot(hist_data, group_labels, colors = new_colors, show_hist = False, show_rug=False)
         fig.update_layout(title_text=cytokine + " Density Plot", title_x=0.5)
         fig.update_layout(plot_bgcolor='rgb(255,255,255)')
+        fig.update_xaxes(title_text='Observed Cytokine Values')
+        fig.update_yaxes(title_text='Density')
         return(fig)

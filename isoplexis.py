@@ -12,11 +12,157 @@ from dash.exceptions import PreventUpdate
 from dash import no_update
 
 
-secretome_selection = ['Mouse Adaptive Immune', 'Human Adaptive Immune', 'NHP Adaptive Immune', 
-'Human Inflammation', 'Human Innate Immune']
+secretome_selection = ['Mouse Adaptive Immune', 'Human Adaptive Immune', 'Non-Human Primate Adaptive Immune', 
+'Human Inflammation', 'Human Innate Immune'] 
+
+#need these two 
+#'Human Natural Killer', 'Mouse Innate Immune']
 
 #this is the original description list
 description_list = ["Donor", "Cell Subset", "Stimulation"]
+
+mouse_adaptive_immune = {'BCA-1': 'Chemoattractive', 
+                        'CCL-11': 'Chemoattractive', 
+                        'FAS':'Regulatory', 
+                        'GM-CSF':'Stimulatory', 
+                        'Granzyme B':'Effector', 
+                        'IFN-g':'Effector', 
+                        'IL-10':'Regulatory', 
+                        'IL-12p70':'Stimulatory',
+                        'IL-13':'Regulatory', 
+                        'IL-15':'Stimulatory', 
+                        'IL-17A':'Inflammatory', 
+                        'IL-18':'Stimulatory', 
+                        'IL-1b':'Inflammatory', 
+                        'IL-2':'Stimulatory',
+                        'IL-21':'Stimulatory', 
+                        'IL-27':'Regulatory', 
+                        'IL-4':'Regulatory', 
+                        'IL-5':'Stimulatory', 
+                        'IL-6':'Inflammatory', 
+                        'IL-7':'Stimulatory',
+                        'IP-10':'Chemoattractive', 
+                        'KC':'Chemoattractive', 
+                        'MCP-1':'Inflammatory',
+                        'MIP-1a':'Effector', 
+                        'RANTES':'Chemoattractive', 
+                        'sCD137':'Stimulatory',
+                        'TGF-b':'Regulatory', 
+                        'TNF-a':'Effector'}
+
+human_adaptive_immune = {'CCL-11': 'Chemoattractive', 
+                        'GM-CSF': 'Stimulatory', 
+                        'Granzyme B':'Effector', 
+                        'IFN-g': 'Effector', 
+                        'IL-10': 'Regulatory', 
+                        'IL-12':'Stimulatory', 
+                        'IL-13':'Regulatory', 
+                        'IL-15':'Stimulatory', 
+                        'IL-17a':'Inflammatory', 
+                        'IL-17f':'Inflammatory',
+                        'IL-1b': 'Inflammatory',
+                        'IL-2': 'Stimulatory',
+                        'IL-21': 'Stimulatory', 
+                        'IL-22': 'Regulatory', 
+                        'IL-4': 'Regulatory', 
+                        'IL-5': 'Stimulatory', 
+                        'IL-6': 'Inflammatory', 
+                        'IL-7': 'Stimulatory', 
+                        'IL-8': 'Stimulatory', 
+                        'IL-9': 'Stimulatory',    
+                        'IP-10': 'Chemoattractive', 
+                        'MCP-1': 'Inflammatory', 
+                        'MCP-4': 'Inflammatory', 
+                        'MIP-1a': 'Effector', 
+                        'MIP-1b': 'Chemoattractive', 
+                        'Perforin': 'Effector', 
+                        'RANTES': 'Chemoattractive', 
+                        'TGF-b1':'Regulatory', 
+                        'TNF-a':'Effector', 
+                        'TNF-b':'Effector', 
+                        'sCD137':'Regulatory', 
+                        'sCD40L':'Regulatory'}
+
+nhp_adaptive_immune = {'GM-CSF':'Stimulatory', 
+                        'IFN-g':'Effector', 
+                        'IL-1b':'Inflammatory', 
+                        'IL-2':'Stimulatory', 
+                        'IL-4':'Regulatory', 
+                        'IL-6':'Inflammatory', 
+                        'IL-8':'Stimulatory', 
+                        'IP-10':'Chemoattractive', 
+                        'MCP-1':'Inflammatory', 
+                        'MIF':'Inflammatory', 
+                        'MIP-1a':'Effector', 
+                        'MIP-1b':'Chemoattractive', 
+                        'RANTES':'Chemoattractive', 
+                        'TNF-a': 'Effector'}
+
+human_inflammation = {'CCL11': 'Chemoattractive', 
+                        'GM-CSF':'TH1 Pro Inflammatory', 
+                        'Granzyme B': 'Cytolytic', 
+                        'IFN-g':'TH1 Pro Inflammatory', 
+                        'IL-10':'Regulatory', 
+                        'IL-12':'TH1 Pro Inflammatory', 
+                        'IL-13':'TH2 Pro Inflammatory', 
+                        'IL-15':'Regulatory', 
+                        'IL-17a':'TH17 Pro Inflammatory', 
+                        'IL-17f':'TH17 Pro Inflammatory', 
+                        'IL-1b':'TH17 Pro Inflammatory', 
+                        'IL-2': 'TH1 Pro Inflammatory', 
+                        'IL-21':'TH17 Pro Inflammatory', 
+                        'IL-22':'Regulatory', 
+                        'IL-4': 'TH2 Pro Inflammatory', 
+                        'IL-5': 'TH2 Pro Inflammatory', 
+                        'IL-6':'TH17 Pro Inflammatory', 
+                        'IL-7':'TH2 Pro Inflammatory', 
+                        'IL-8':'Chemoattractive',
+                        'IL-9':'TH2 Pro Inflammatory', 
+                        'IP-10':'Chemoattractive', 
+                        'MCP-1':'Chemoattractive', 
+                        'MCP-4':'Chemoattractive', 
+                        'MIP-1a':'Chemoattractive', 
+                        'MIP-1b':'Chemoattractive', 
+                        'Perforin':'Cytolytic', 
+                        'RANTES':'Chemoattractive', 
+                        'TGF-b1':'Regulatory', 
+                        'TNF-a': 'TH1 Pro Inflammatory', 
+                        'TNF-b':'TH1 Pro Inflammatory', 
+                        'sCD137':'Other', 
+                        'sCD40L':'Other'}
+
+human_innate_immune ={'BCA-1': 'Chemoattractive', 
+                    'CCL11': 'Chemoattractive', 
+                    'EGF':'Growth Factors', 
+                    'GM-CSF':'Stimulatory', 
+                    'IFN-g':'Effector', 
+                    'IL-10':'Regulatory', 
+                    'IL-12':'Inflammatory', 
+                    'IL-12-p40':'Inflammatory', 
+                    'IL-13':'Regulatory', 
+                    'IL-15':'Stimulatory', 
+                    'IL-17a':'Inflammatory', 
+                    'IL-17f':'Inflammatory', 
+                    'IL-18':'Stimulatory', 
+                    'IL-1b':'Inflammatory', 
+                    'IL-22':'Regulatory', 
+                    'IL-5':'Stimulatory', 
+                    'IL-6':'Inflammatory', 
+                    'IL-8':'Stimulatory', 
+                    'IL-9':'Stimulatory', 
+                    'IP-10': 'Chemoattractive', 
+                    'MCP-1':'Inflammatory', 
+                    'MCP-4':'Inflammatory', 
+                    'MIF':'Inflammatory', 
+                    'MIP-1a':'Effector', 
+                    'MIP-1b': 'Chemoattractive', 
+                    'PDGF-BB':'Growth Factors', 
+                    'RANTES': 'Chemoattractive',  
+                    'TGF-a':'Stimulatory', 
+                    'TNF-a':'Effector', 
+                    'TNF-b':'Effector', 
+                    'VEGF':'Growth Factors', 
+                    'sCD40L':'Regulatory'}
 
 centerStyle = {'textAlign': 'center'}
 
@@ -149,6 +295,7 @@ app.layout = dbc.Container(
     #output file information
     html.Div(id='output-data-upload', style =centerStyle),
     dcc.Store(id = 'cyto_list'),
+    dcc.Store(id = 'effector_list'),
     dcc.Store(id = 'stored-data-reordered'),
     dcc.Store(id='color_discrete_map'),
     dl.plugins.page_container], fluid=True )
@@ -165,6 +312,7 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
         return children
 
 @app.callback(Output('cyto_list', 'data'),
+            Output('effector_list', 'data'),
             Input('secretome_type', 'value'))
 def cyto_secretion_list(val):
     if val is None:
@@ -172,32 +320,34 @@ def cyto_secretion_list(val):
 
     else:
         if val == "Mouse Adaptive Immune":
-            cyto_list = ['BCA-1', 'CCL-11', 'FAS', 'GM-CSF', 'Granzyme B', 
-                    'IFN-g', 'IL-10', 'IL-12p70', 'IL-13', 'IL-15', 'IL-17A', 
-                    'IL-18', 'IL-1b', 'IL-2', 'IL-21', 'IL-27', 'IL-4', 
-                    'IL-5', 'IL-6', 'IL-7', 'IP-10', 'KC', 'MCP-1', 'MIP-1a', 
-                    'RANTES', 'sCD137', 'TGF-b', 'TNF-a']
+            cyto_list = list(mouse_adaptive_immune.keys())
+            effector_list = mouse_adaptive_immune
         elif val  == 'Human Adaptive Immune':
-            cyto_list = ['Granzyme B', 'IFN-g', 'MIP-1a', 'Perforin', 'TNF-a',
-                    'TNF-b', 'GM-CSF', 'IL-2', 'IL-5', 'IL-7', 'IL-8', 'IL-9', 'IL-12', 'IL-15', 
-                    'IL-21', 'CCL-11', 'IP-10', 'MIP-1b', 'RANTES', 'IL-4', 'IL-10', 'IL-13',
-                    'IL-22', 'TGF-b1', 'sCD137', 'sCD40L', 'IL-1b', 'IL-6', 'IL-17a', 'IL-17f',
-                    'MCP-1', 'MCP-4']
-        elif val == 'NHP Adaptive Immune':
-            cyto_list = ['TNF-a', 'MCP-1', 'IL-2', 'IL-4', 'MIP-1b', 'IL-6', 'IL-8',
-                    'IL-1b', 'RANTES', 'IFN-g', 'IP-10', 'MIP-1a', 'MIF', 'GM-CSF']
+            cyto_list = list(human_adaptive_immune.keys())
+            effector_list = human_adaptive_immune
+        elif val == 'Non-Human Primate Adaptive Immune':
+            cyto_list = list(nhp_adaptive_immune.keys())
+            effector_list = nhp_adaptive_immune
         elif val == 'Human Inflammation':
-            cyto_list = ["GM-CSF", 'IFN-g', 'IL-2', 'IL-12', 'TNF-a', 'TNF-b', 'IL-4',
-                    'IL-5', 'IL-7', 'IL-9', 'IL-13', 'CCL11', 'IL-8', 'IP-10', 'MCP-1', 'MCP-4', 'MIP-1a',
-                    'MIP-1b', 'RANTES', 'IL-10', 'IL-15', 'IL-22', 'TGF-b1', 'IL-1b', 'IL-6', 'IL-17a', 
-                    'IL-17f', 'IL-21', 'Granzyme B', 'Perforin', 'sCD40L', 'sCD137']
+            cyto_list = list(human_inflammation.keys())
+            effector_list = human_inflammation           
         else:
-            cyto_list = ['IFN-g', 'MIP-1a', 'TNF-a', 'TNF-b', 'Stimulatory', 'GM-CSF', 
-                    'IL-8', 'IL-9', 'IL-15', 'IL-18', 'TGF-a', 'IL-5', 'CCL11', 'IP-10', 'MIP-1b', 
-                    'RANTES', 'BCA-1', 'IL-10', 'IL-13', 'IL-22', 'sCD40L', 'IL-1b', 'IL-6', 
-                    'IL-12-p40', 'IL-12', 'IL-17a', 'IL-17f', 'MCP-1', 'MCP-4', 'MIF', 'EGF',
-                    'PDGF-BB', 'VEGF']
-        return cyto_list
+        # elif val == 'Human Innate Immune':
+            cyto_list = list(human_innate_immune.keys())
+            effector_list = human_innate_immune
+        # elif val == 'Human Natural Killer':
+        #     cyto_list = ['Granzyme B', 'IFN-g', 'MIP-1a', 'Perforin', 'TNF-a',
+        #             'TNF-b', 'GM-CSF', 'IL-2', 'IL-5', 'IL-7', 'IL-8', 'IL-9', 'IL-12', 'IL-15', 
+        #             'IL-21', 'CCL-11', 'IP-10', 'MIP-1b', 'RANTES', 'IL-4', 'IL-10', 'IL-13',
+        #             'IL-22', 'TGF-b1', 'sCD137', 'sCD40L', 'IL-1b', 'IL-6', 'IL-17a', 'IL-17f',
+        #             'MCP-1', 'MCP-4' ]
+        # #'Mouse Innate Immune'
+        # else:
+        #     cyto_list = ['IFN-g', 'TNF-a', 'MIP-1a', 'IL-15', 'GM-CSF', 'IL-5',
+        #     'IL-10', 'IL-13', 'IL-6', 'IL-17a', 'MCP-1', 'IP-10', 'MIP-1b', 'EGF',
+        #     'PDGF-BB', 'MIF']
+
+        return cyto_list, effector_list
 
 
 @app.callback(Output('stored-data-reordered', 'data'),
@@ -233,20 +383,9 @@ def discrete_color(n, selected_permutation):
         return no_update
     else: 
         #this makes sure colors are the same for bar plots, density and histogram
-        #better separation of colors - uses the thermal palette
-        colors = ['rgb(3, 35, 51)', 
-        #'rgb(13, 48, 100)', 
-        'rgb(53, 50, 155)', 
-        #'rgb(93, 62, 153)', 
-        'rgb(126, 77, 143)', 
-        #'rgb(158, 89, 135)', 
-        'rgb(193, 100, 121)', 
-        #'rgb(225, 113, 97)', 
-        'rgb(246, 139, 69)', 
-        #'rgb(251, 173, 60)', 
-        'rgb(246, 211, 70)', 
-        #'rgb(231, 250, 90)'
-        ]
+        #"blue", "red", "gray", "green", "yellow", "teal", "purple", "black"
+        colors = ['rgb(255, 0, 0)', 'rgb(0, 0, 255)', 'rgb(128, 128, 128)', 'rgb(0, 128, 0)', 
+         'rgb(255, 255, 0)', 'rgb(0, 128, 128)', 'rgb(128, 0, 128)', 'rgb(0, 0, 0)']
         colors_for_plot = colors[:len(selected_permutation)]
         color_discrete_map = {selected_permutation[i]: colors_for_plot[i] for i in range(len(selected_permutation))}
         return color_discrete_map

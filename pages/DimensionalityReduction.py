@@ -74,7 +74,8 @@ layout = html.Div(
             Input('plot_types', 'value'),
             Input('cyto_list', 'data'),
             State ('stored-data-reordered', 'data'), 
-            State ('color_discrete_map', 'data'))
+            State ('color_discrete_map', 'data'),
+            )
 
 def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
     try:
@@ -98,6 +99,7 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
                 fig = px.scatter_3d(df2, x="PCA 1", y="PCA 2", z="PCA 3", color="Treatment Conditions", color_discrete_map = color_discrete_map)
             fig.update_layout(title_text = method+" PCA", title_x=0.5, )
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
+            fig.update_traces(marker={'size': 5}) 
             return(fig)
     except:
         return no_update
@@ -112,7 +114,8 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
             Input('iterations_radio', 'value'),
             Input('cyto_list', 'data'),
             State ('stored-data-reordered', 'data'), 
-            State ('color_discrete_map', 'data'))
+            State ('color_discrete_map', 'data'),
+           )
 
 def tsne_func(n, method, plot_type, perplexity, iterations, cytokines, df , color_discrete_map):
     try:
@@ -138,6 +141,7 @@ def tsne_func(n, method, plot_type, perplexity, iterations, cytokines, df , colo
                 fig = px.scatter_3d(df2, x="TSNE 1", y="TSNE 2", z="TSNE 3", color="Treatment Conditions", color_discrete_map = color_discrete_map)      
             fig.update_layout(title_text = method + " TSNE", title_x=0.5, )
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
+            fig.update_traces(marker={'size': 5})
             return(fig)
     except:
         return no_update

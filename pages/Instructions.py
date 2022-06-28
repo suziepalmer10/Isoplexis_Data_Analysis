@@ -27,13 +27,13 @@ layout = html.Div(
     ]
 )
 
-#callback: pca function
 @callback(Output('row_value', 'children'),
         Output('col_value', 'children'),
         Output('iso_stats_header', 'children'),
         Input('analysis-button','n_clicks'),
         Input('cyto_list', 'data'),
-        State('stored-data-reordered', 'data'))
+        State('stored-data-reordered', 'data'),
+        prevent_initial_call=True,)
 
 def col_row_check (n, cyto_list, df):
     if n is None: 
@@ -46,3 +46,12 @@ def col_row_check (n, cyto_list, df):
         numCells = 'Number of Cells: ' + str(col)
         iso_stats_header = 'Isoplexis Data Analysis'
         return(numCytokines, numCells, iso_stats_header)
+
+
+# @callback(Output('row_value', 'children'),
+#         Output('col_value', 'children'),
+#         Output('iso_stats_header', 'children'),
+#         Input('analysis-button','n_clicks'),
+
+#         prevent_initial_call=True,)
+# def callbackForInstructions(n):

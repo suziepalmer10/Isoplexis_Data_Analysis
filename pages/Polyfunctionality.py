@@ -2,27 +2,41 @@ import dash
 dash.register_page(__name__, title = 'Polyfunctionality')
 from dash import dcc, html, Input, Output, callback
 import plotly.express as px
-import numpy as np # pip install numpy
 import pandas as pd
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from dash.exceptions import PreventUpdate
 from dash import no_update
 
-
+options_effector = ['proportions', 'raw']
 centerStyle = {'textAlign': 'center'}
-
     
 layout = html.Div ([
             html.H2(id = "title_poly_analysis"),
             html.H4(id='total_polyfunction'),
+            dcc.Store(id = 'poly_df'),
+            dcc.Store(id = 'effector_df'),
             dbc.Row(
             [
                 dbc.Col(html.Div([dcc.Graph(id="polyfunctional_bar"),
-                html.P(id = "instructions_poly_analysis")],
+                    html.P(id = "instructions_poly_analysis"),
+                    html.Button("Download CSV", id="btn_csv1"),
+                    dcc.Download(id="poly-download-dataframe-csv")],
                 )),
 
-                dbc.Col(html.Div(html.P("This is where classification polyfunction graph goes."))),
+                dbc.Col(html.Div([
+                    dcc.Graph(id="effector_bar"),
+                    html.P("Select to view proportional or raw data:"),
+                    dcc.RadioItems(
+                    id="proportions_or_raw",
+                    options=options_effector,
+                    value='proportions',
+                    inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"}, 
+                    style=centerStyle),
+                    html.P(id = "instructions_effector_analysis"),
+                    html.Button("Download CSV", id="btn_csv2"), 
+                    dcc.Download(id="effector-download-dataframe-csv") 
+                ])),
             ])], style = centerStyle)
 
 #polyfunctional graph and number of polyfunctional cells
@@ -30,6 +44,7 @@ layout = html.Div ([
         Output('total_polyfunction', 'children'),
         Output('title_poly_analysis', 'children'),
         Output('instructions_poly_analysis', 'children'),
+        Output('poly_df', 'data'),
         Input('analysis-button','n_clicks'),
         Input('cyto_list', 'data'),
         State('stored-data-reordered', 'data'))
@@ -87,12 +102,114 @@ def polyfunctional_bar_ (n, cyto_list, df):
                     columns =['Treatment Conditions', 'Polyfunctionality Percentages', 
                     'Percent Polyfunctional Cytokines Secreting'])
             fig = px.bar(df, x='Treatment Conditions', y ='Percent Polyfunctional Cytokines Secreting', 
-                color='Polyfunctionality Percentages', color_discrete_sequence = px.colors.sequential.thermal)
+                color='Polyfunctionality Percentages', color_discrete_sequence=px.colors.qualitative.G10)
             fig.update_layout(title_text= 'Polyfunctional Cell Overview', title_x = 0.5)
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
             polyCells = 'Total Number of Polyfunctional Cells:  '+ str(total_count)
             TitleForAnalysis = "Polyfunctional Analysis"
             InstructionsForAnalysis = 'Polyfunctional Cell Overview: calculates the proportion of cells that express two or more proteins.'
-            return(fig, polyCells, TitleForAnalysis, InstructionsForAnalysis)
+            return(fig, polyCells, TitleForAnalysis, InstructionsForAnalysis, df.to_dict('records'))
     except:
         return no_update
+
+@callback(
+    Output("poly-download-dataframe-csv", "data"),
+    Input("btn_csv1", "n_clicks"),
+    Input('poly_df', 'data'),
+    prevent_initial_call=True,
+)
+def func_csv_poly(n_clicks, df):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if "btn_csv1" in changed_id:
+        df = pd.DataFrame(df)
+        return dcc.send_data_frame(df.to_csv, "polyfunctional.csv")
+
+
+#effector bar for classification
+@callback(Output('effector_bar', 'figure'),
+        Output('instructions_effector_analysis', 'children'),
+        Output("effector_df", "data"),
+        Input('analysis-button','n_clicks'),
+        Input('proportions_or_raw', 'value'),
+        State('cyto_list', 'data'),
+        State('effector_list', 'data'),
+        State('stored-data-reordered', 'data'))
+
+def effector_bar_(n, view, cyto_list, effector_data, df):
+    if n is None: 
+        return no_update
+    else:
+        df = pd.DataFrame(df)
+        df1 =df[cyto_list]
+        m_df = pd.DataFrame.from_dict([effector_data.keys(), effector_data.values()]).T
+        #replaces cytokine name with classification
+        df1 = df1.rename(columns=dict(zip(m_df[0], m_df[1])))
+        #sums the values of similar classifications 
+        df2 = df1.groupby(level=0, axis=1).sum()
+        df2['Treatment Conditions'] = df['Treatment Conditions']
+        count = 0
+        for i in df2["Treatment Conditions"].unique():
+            df_sub = df2[df2["Treatment Conditions"] == i]
+            df_sub.drop("Treatment Conditions", inplace=True, axis=1)
+            new_df2 = df_sub.sum(axis = 0)
+            new_val = new_df2/new_df2.sum()
+            if count ==0:
+                new_df = pd.DataFrame(new_val, columns=[i])
+                raw_df = pd.DataFrame(new_df2, columns=[i])
+                count = count +1
+            else:
+                new_df[i] = new_val
+                raw_df[i] = new_df2
+        if view == 'raw':
+            treatment, effectors, values = changedf(raw_df)
+            percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Classification': effectors, 'Raw Values': values})
+            fig = px.bar(percentile_list, x='Treatment Conditions', y ='Raw Values', color='Classification', color_discrete_sequence=px.colors.qualitative.G10)
+            fig.update_layout(title_text= 'Cell Functional Classification', title_x = 0.5)
+            fig.update_layout(plot_bgcolor='rgb(255,255,255)')
+            InstructionsForAnalysis = 'Raw Cell Functional Classification: displays breakdown of secreting cytokines as classified by Isoplexis.'
+            return fig, InstructionsForAnalysis, raw_df.to_dict('records')
+        else:
+            try: 
+                treatment, effectors, values = changedf(new_df)
+                percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Classification': effectors, 'Proportion': values})
+                fig = px.bar(percentile_list, x='Treatment Conditions', y ='Proportion', color='Classification', color_discrete_sequence=px.colors.qualitative.G10)
+                fig.update_layout(title_text= 'Cell Functional Classification', title_x = 0.5)
+                fig.update_layout(plot_bgcolor='rgb(255,255,255)')
+                InstructionsForAnalysis = 'Proportions Cell Functional Classification: displays proportions of secreting cytokines as classified by Isoplexis.'
+                return fig, InstructionsForAnalysis, new_df.to_dict('records')
+            #need this portion since will not initially update
+            except:
+                treatment, effectors, values = changedf(new_df)
+                percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Classification': effectors, 'Proportion': values})
+                fig = px.bar(percentile_list, x='Treatment Conditions', y ='Proportion', color='Classification', color_discrete_sequence=px.colors.qualitative.G10)
+                fig.update_layout(title_text= 'Cell Functional Classification', title_x = 0.5)
+                fig.update_layout(plot_bgcolor='rgb(255,255,255)')
+                InstructionsForAnalysis = 'Proportions Cell Functional Classification: displays proportions of secreting cytokines as classified by Isoplexis.'
+                return fig, InstructionsForAnalysis, new_df.to_dict('records')
+            
+
+def changedf(new_df):
+    values = new_df.to_numpy().flatten()
+    list_a = list(new_df.columns)
+    effect = list(new_df.index)
+    val = len(values)
+    list_size = len(list_a)
+    range = val/list_size
+    treatment = list_a*int(range)
+    class_ = len(effect)
+    val2 = val/class_
+    effectors = effect*int(val2)
+    return(treatment, effectors, values)
+
+#https://stackoverflow.com/questions/62671226/plotly-dash-how-to-reset-the-n-clicks-attribute-of-a-dash-html-button
+@callback(
+    Output("effector-download-dataframe-csv", "data"),
+    Input("btn_csv2", "n_clicks"),
+    Input('effector_df', 'data'),
+    prevent_initial_call=True,
+)
+def func_csv_poly(n_clicks, df):
+    changed_id = [p['prop_id'] for p in dash.callback_context.triggered][0]
+    if "btn_csv2" in changed_id:
+        df = pd.DataFrame(df)
+        return dcc.send_data_frame(df.to_csv, "effector.csv")

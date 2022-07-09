@@ -1,5 +1,5 @@
 import dash
-dash.register_page(__name__, title = 'Polyfunctionality')
+dash.register_page(__name__, title = 'Polyfunctionality and Dominant Functional Groups')
 from dash import dcc, html, Input, Output, callback
 import plotly.express as px
 import pandas as pd

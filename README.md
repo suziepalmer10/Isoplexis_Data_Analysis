@@ -49,7 +49,7 @@ conda activate isoplexis
 
 ```
 
-- On Local System (Max/Linux)
+- On Local System (Mac/Linux)
 
 ```
 source venv/bin/activate

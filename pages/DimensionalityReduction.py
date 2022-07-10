@@ -11,21 +11,19 @@ from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
 from sklearn.manifold import TSNE
 
-
 #methods for PCA and TSNE
 method_pcatsne = ["Standard Scalar Normalized", "Not Normalized"]
 #values neccessary for tsne function
 iterations = [250, 300, 400, 500, 600, 700, 800, 900, 1000]
 perplexity = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 plot_types = ['2D', '3D']
-
-
 centerStyle = {'textAlign': 'center'}
 
 layout = html.Div(
     [   html.H2("Dimensionality Reduction"),
         html.H4("PCA is a linear dimensionality reduction technique and TSNE is a non-linear dimensionality reduction technique."),
-        html.H5("Note: TSNE might take a minute to reload since this is calculated in real-time."),
+        html.H5("Note: Dimensionality reduction analyses may differ from  IsoSpeak. IsoSpeak uses unthresholded data, while the data file the user uploaded has a 2% threshold. Values below this threshold become 0."),
+        html.H5("TSNE might take a minute to reload since this is calculated in real-time."),
         html.H4("Select whether or not to normalize dimensionality reduction plots."),
         html.P("Data is normally normalized before performing dimensionality reduction."),
         dcc.RadioItems(
@@ -100,6 +98,7 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
             fig.update_layout(title_text = method+" PCA", title_x=0.5, )
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
             fig.update_traces(marker={'size': 5}) 
+            fig.update_layout(width=800, height=800)
             return(fig)
     except:
         return no_update
@@ -142,6 +141,7 @@ def tsne_func(n, method, plot_type, perplexity, iterations, cytokines, df , colo
             fig.update_layout(title_text = method + " TSNE", title_x=0.5, )
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
             fig.update_traces(marker={'size': 5})
+            fig.update_layout(width=800, height=800)
             return(fig)
     except:
         return no_update

@@ -4,13 +4,10 @@ from dash import html, Input, Output, callback, dcc, dash_table
 import pandas as pd
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
-
 
 centerStyle = {'textAlign': 'center'}
 image_path = 'assets/nav_bar.png'
-
 #human single cell adaptive immune table
 human_adaptive = {'Functional Groups': ['Effector', 'Stimulatory', 'Chemoattractive', 'Regulatory', 'Inflammatory'], 
                         'Cytokines': ['Granzyme B, IFN-g, MIP1-a, Perforin, TNF-a, TNF-b', 
@@ -93,7 +90,6 @@ human_inn_table = dash_table.DataTable(
      style_header={'backgroundColor': 'gray','fontWeight': 'bold', 'textAlign': 'center'
     })
 
-
 header = dbc.Row([dbc.Col(html.Div(
             [
             html.H4(id='check_cyto_num', style = {"text-decoration": "underline"}),
@@ -102,7 +98,6 @@ header = dbc.Row([dbc.Col(html.Div(
             html.H4(id='col_value')
             ]))]
             , style = centerStyle)
-
 
 instructions = dbc.Row(
     [
@@ -119,14 +114,13 @@ instructions = dbc.Row(
             ), width={"size": 4}, style=centerStyle),
             dbc.Col(html.Div(
             [
-            html.H3(dcc.Markdown('''__*Clustering:*__ displays hierarchial clustering across all cytokines and for individually selected cytokines.''')),
-            html.H3(dcc.Markdown('''__*Dimensionality Reduction Analysis:*__ displays PCA and tSNE clusters for different treatment groups.''')),
-            html.H3(dcc.Markdown('''__*Polyfunctionality and Dominant Functional Groups:*__ displays percent polyfunctional cytokines secreting and the Dominant Functional Group displays the most prevalent functional groups per condition.''')),
-            html.H3(dcc.Markdown('''__*Distribution and Statistics:*__ displays distributions across treatment groups and multiple statistics and statistical tests, including all proportion and non-zero proportions for indiviudal cytokines.''')),
+            html.H3(dcc.Markdown('''__*Clustering:*__ displays hierarchical clustered dendrogram and heatmap for all or any individual treatment conditions selected. Clustering across all cytokines is displayed at the top of the page, and the user can also select individual cytokines to cluster, which is displayed at the bottom of the page. ''')),
+            html.H3(dcc.Markdown('''__*Dimensionality Reduction Analysis:*__ displays PCA and tSNE plots across selected treatment conditions. The user can view the data in 3D or 2D and has several options for tSNE optimization parameters, perplexity, and the number of iterations. ''')),
+            html.H3(dcc.Markdown('''__*Polyfunctionality and Dominant Functional Groups:*__ the percent polyfunctional cytokines will allow the user to calculate the percent polyfunctional cells in each treatment condition. The Dominant Functional Groups allow the user to view raw and proportion data for the functional groups, as classified by Isoplexis for each treatment condition. For all analyses on this page, CSV files of the data can be downloaded. ''')),
+            html.H3(dcc.Markdown('''__*Distribution and Statistics:*__ displays percent cytokines secreting for each treatment condition at the top of the page. Additionally, individual cytokine statistics are shown below, allowing the user to view individual statistics for each condition, including all-proportion and zero proportion tests. Individual Cytokine data distribution for each treatment condition is also shown at the bottom of the page. ''')),
             ]
             ))]
             )
-
 
 layout = html.Div(
     [

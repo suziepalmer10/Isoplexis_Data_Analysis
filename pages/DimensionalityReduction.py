@@ -42,7 +42,7 @@ layout = html.Div(
 
         dbc.Row([dbc.Col(html.Div(
                 html.Div(dcc.Graph(id='dim_red_fig')),
-                )),
+                ), width = 6),
             dbc.Col(html.Div([
                 html.Div(dcc.Graph(id='ts_dim_red_fig')),
                 html.H5("Select Perplexity of Nearest Neighbors: ",
@@ -65,7 +65,7 @@ layout = html.Div(
                     value=500,
                     inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
                     style=centerStyle)
-            ]))])
+            ]), width = 6)])
      ], style=centerStyle
 )
 

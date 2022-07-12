@@ -115,25 +115,30 @@ header = dbc.Row([dbc.Col(html.Div(
 
 instructions = dbc.Row(
     [
-        html.H2(dcc.Markdown('''
+        dbc.Row(
+            html.H2(dcc.Markdown('''
              *Descriptions of Pages:*
-            '''),  style={"text-decoration": "underline", 'textAlign': 'center'}),
-        dbc.Col(html.Div(
+            '''),  style={"text-decoration": "underline", 'textAlign': 'center'})),
+        dbc.Row(
             [
-                html.Img(src=image_path),
-                html.H4(dcc.Markdown('''
+                dbc.Col(html.Div(
+                    [
+                        html.Img(src=image_path, width = "100%"),
+                        html.H4(dcc.Markdown('''
             *This is an image of the navigation bar that is found on the top-right corner of this website (You are currently on the Overview Page).*
             ''')),
-            ]
-        ), width={"size": 4}, style=centerStyle),
-        dbc.Col(html.Div(
-                [
-                    html.H3(dcc.Markdown('''__*Clustering:*__ displays hierarchical clustered dendrogram and heatmap for all or any individual treatment conditions selected. Clustering across all cytokines is displayed at the top of the page, and the user can also select individual cytokines to cluster, which is displayed at the bottom of the page. ''')),
-                    html.H3(dcc.Markdown('''__*Dimensionality Reduction Analysis:*__ displays PCA and tSNE plots across selected treatment conditions. The user can view the data in 3D or 2D and has several options for tSNE optimization parameters, perplexity, and the number of iterations. ''')),
-                    html.H3(dcc.Markdown('''__*Polyfunctionality and Dominant Functional Groups:*__ the percent polyfunctional cytokines will allow the user to calculate the percent polyfunctional cells in each treatment condition. The Dominant Functional Groups allow the user to view raw and proportion data for the functional groups, as classified by Isoplexis for each treatment condition. For all analyses on this page, CSV files of the data can be downloaded. ''')),
-                    html.H3(dcc.Markdown('''__*Distribution and Statistics:*__ displays percent cytokines secreting for each treatment condition at the top of the page. Additionally, individual cytokine statistics are shown below, allowing the user to view individual statistics for each condition, including all-proportion and zero proportion tests. Individual Cytokine data distribution for each treatment condition is also shown at the bottom of the page. ''')),
-                ]
-                ))]
+                    ]
+                ), width=4),
+                dbc.Col(html.Div(
+                    [
+                        html.H3(dcc.Markdown('''__*Clustering:*__ displays hierarchical clustered dendrogram and heatmap for all or any individual treatment conditions selected. Clustering across all cytokines is displayed at the top of the page, and the user can also select individual cytokines to cluster, which is displayed at the bottom of the page. ''')),
+                        html.H3(dcc.Markdown('''__*Dimensionality Reduction Analysis:*__ displays PCA and tSNE plots across selected treatment conditions. The user can view the data in 3D or 2D and has several options for tSNE optimization parameters, perplexity, and the number of iterations. ''')),
+                        html.H3(dcc.Markdown('''__*Polyfunctionality and Dominant Functional Groups:*__ the percent polyfunctional cytokines will allow the user to calculate the percent polyfunctional cells in each treatment condition. The Dominant Functional Groups allow the user to view raw and proportion data for the functional groups, as classified by Isoplexis for each treatment condition. For all analyses on this page, CSV files of the data can be downloaded. ''')),
+                        html.H3(dcc.Markdown('''__*Distribution and Statistics:*__ displays percent cytokines secreting for each treatment condition at the top of the page. Additionally, individual cytokine statistics are shown below, allowing the user to view individual statistics for each condition, including all-proportion and zero proportion tests. Individual Cytokine data distribution for each treatment condition is also shown at the bottom of the page. ''')),
+                    ]
+                ), width=8)
+            ])
+    ]
 )
 
 layout = html.Div(

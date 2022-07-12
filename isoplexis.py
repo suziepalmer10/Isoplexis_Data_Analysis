@@ -1,5 +1,4 @@
 import dash
-import dash_labs as dl
 import dash_bootstrap_components as dbc
 import base64
 import datetime
@@ -164,11 +163,12 @@ centerStyle = {'textAlign': 'center'}
 
 
 app = dash.Dash(
-    __name__, plugins=[dl.plugins.pages],
+    __name__, 
     external_stylesheets=[
         dbc.themes.FLATLY],
     # suppress_callback_exceptions set to True for dynamic layout
-    suppress_callback_exceptions=True
+    suppress_callback_exceptions=True,
+    use_pages=True
 )
 
 # code for navigation bar
@@ -310,7 +310,8 @@ app.layout = dbc.Container(
      dcc.Store(id='effector_list'),
      dcc.Store(id='stored-data-reordered'),
      dcc.Store(id='color_discrete_map'),
-     dl.plugins.page_container], fluid=True)
+     dash.page_container
+     ], fluid=True)
 
 
 @app.callback(Output('output-data-upload', 'children'),

@@ -94,9 +94,7 @@ layout = html.Div(
         html.P("Density plots allow for the visualization of the distribution of a numeric variables for one or more groups.")
         ]))
         ], style = centerStyle),
-    
-    ]
-)
+])
 
 #callback for all statistics options
 @callback(

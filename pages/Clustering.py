@@ -43,8 +43,6 @@ layout = html.Div(
             dcc.Graph(id = 'graph_hm_sub')
         ]))]),
         html.P("Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."),
-
-
     ], style = centerStyle
 )
 

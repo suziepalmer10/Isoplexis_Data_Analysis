@@ -14,10 +14,6 @@ from dash import no_update
 
 secretome_selection = ['Mouse Adaptive Immune', 'Human Adaptive Immune', 'Non-Human Primate Adaptive Immune', 
 'Human Inflammation', 'Human Innate Immune'] 
-
-#need these two 
-#'Human Natural Killer', 'Mouse Innate Immune']
-
 #this is the original description list
 description_list = ["Donor", "Cell Subset", "Stimulation"]
 
@@ -284,7 +280,7 @@ def parse_contents(contents, filename, date):
 app.layout = dbc.Container(
     [navbar, 
     #header 
-    html.H1('Isoplexis Data Analysis', style = centerStyle),
+    html.H1('Isoplexis Single Cell Secretome Data Analysis', style = centerStyle),
     html.H2('Suzette Palmer', style = centerStyle),
     html.H3('Zhan and Koh Labs', style = centerStyle),
     html.H4('University of Texas Southwestern Medical Center', style =centerStyle),
@@ -335,20 +331,7 @@ def cyto_secretion_list(val):
         # elif val == 'Human Innate Immune':
             cyto_list = list(human_innate_immune.keys())
             effector_list = human_innate_immune
-        # elif val == 'Human Natural Killer':
-        #     cyto_list = ['Granzyme B', 'IFN-g', 'MIP-1a', 'Perforin', 'TNF-a',
-        #             'TNF-b', 'GM-CSF', 'IL-2', 'IL-5', 'IL-7', 'IL-8', 'IL-9', 'IL-12', 'IL-15', 
-        #             'IL-21', 'CCL-11', 'IP-10', 'MIP-1b', 'RANTES', 'IL-4', 'IL-10', 'IL-13',
-        #             'IL-22', 'TGF-b1', 'sCD137', 'sCD40L', 'IL-1b', 'IL-6', 'IL-17a', 'IL-17f',
-        #             'MCP-1', 'MCP-4' ]
-        # #'Mouse Innate Immune'
-        # else:
-        #     cyto_list = ['IFN-g', 'TNF-a', 'MIP-1a', 'IL-15', 'GM-CSF', 'IL-5',
-        #     'IL-10', 'IL-13', 'IL-6', 'IL-17a', 'MCP-1', 'IP-10', 'MIP-1b', 'EGF',
-        #     'PDGF-BB', 'MIF']
-
         return cyto_list, effector_list
-
 
 @app.callback(Output('stored-data-reordered', 'data'),
             Input('submit-button','n_clicks'),
@@ -369,8 +352,7 @@ def permutationToPlot (n, selected_permutation, data):
             else:
                 df_to_append = data[data["Treatment Conditions"] == i]
                 new_data = pd.concat([new_data, df_to_append])
-                count = count + 1
-        
+                count = count + 1       
         return new_data.to_dict('records')
 
 #this makes sure the color schemes for the bar plots, density and histogram are consistent
@@ -427,7 +409,6 @@ def individual_cyto_callback(n, m, cyto_list, selected_cytokine, df):
         cytokine_dictionary = {edit_cyto_list[i]: heatmap_dictionary[i] for i in range(len(edit_cyto_list))}
         options=[{'label': k, 'value': k} for k in cytokine_dictionary.keys()]
         return options
-
 
 if __name__ == "__main__":
     app.run_server(debug=True)

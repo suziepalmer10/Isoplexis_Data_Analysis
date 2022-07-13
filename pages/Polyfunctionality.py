@@ -1,5 +1,5 @@
 import dash
-dash.register_page(__name__, title = 'Polyfunctionality')
+dash.register_page(__name__, title = 'Polyfunctionality and Dominant Functional Groups')
 from dash import dcc, html, Input, Output, callback
 import plotly.express as px
 import pandas as pd
@@ -103,11 +103,11 @@ def polyfunctional_bar_ (n, cyto_list, df):
                     'Percent Polyfunctional Cytokines Secreting'])
             fig = px.bar(df, x='Treatment Conditions', y ='Percent Polyfunctional Cytokines Secreting', 
                 color='Polyfunctionality Percentages', color_discrete_sequence=px.colors.qualitative.G10)
-            fig.update_layout(title_text= 'Polyfunctional Cell Overview', title_x = 0.5)
+            fig.update_layout(title_text= 'Percent Polyfunctional Cytokines Secreting', title_x = 0.5)
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
             polyCells = 'Total Number of Polyfunctional Cells:  '+ str(total_count)
             TitleForAnalysis = "Polyfunctional Analysis"
-            InstructionsForAnalysis = 'Polyfunctional Cell Overview: calculates the proportion of cells that express two or more proteins.'
+            InstructionsForAnalysis = 'Percent Polyfunctional Cytokines Secreting: calculates the proportion of cells that express two or more proteins.'
             return(fig, polyCells, TitleForAnalysis, InstructionsForAnalysis, df.to_dict('records'))
     except:
         return no_update
@@ -123,7 +123,6 @@ def func_csv_poly(n_clicks, df):
     if "btn_csv1" in changed_id:
         df = pd.DataFrame(df)
         return dcc.send_data_frame(df.to_csv, "polyfunctional.csv")
-
 
 #effector bar for classification
 @callback(Output('effector_bar', 'figure'),
@@ -162,32 +161,31 @@ def effector_bar_(n, view, cyto_list, effector_data, df):
                 raw_df[i] = new_df2
         if view == 'raw':
             treatment, effectors, values = changedf(raw_df)
-            percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Classification': effectors, 'Raw Values': values})
-            fig = px.bar(percentile_list, x='Treatment Conditions', y ='Raw Values', color='Classification', color_discrete_sequence=px.colors.qualitative.G10)
-            fig.update_layout(title_text= 'Cell Functional Classification', title_x = 0.5)
+            percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Functional Groups': effectors, 'Raw Values': values})
+            fig = px.bar(percentile_list, x='Treatment Conditions', y ='Raw Values', color='Functional Groups', color_discrete_sequence=px.colors.qualitative.G10)
+            fig.update_layout(title_text= 'Dominant Functional Groups', title_x = 0.5)
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
-            InstructionsForAnalysis = 'Raw Cell Functional Classification: displays breakdown of secreting cytokines as classified by Isoplexis.'
+            InstructionsForAnalysis = 'Raw Dominant Functional Groups: displays breakdown of secreting cytokines as classified by Isoplexis.'
             return fig, InstructionsForAnalysis, raw_df.to_dict('records')
         else:
             try: 
                 treatment, effectors, values = changedf(new_df)
-                percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Classification': effectors, 'Proportion': values})
-                fig = px.bar(percentile_list, x='Treatment Conditions', y ='Proportion', color='Classification', color_discrete_sequence=px.colors.qualitative.G10)
-                fig.update_layout(title_text= 'Cell Functional Classification', title_x = 0.5)
+                percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Functional Groups': effectors, 'Proportion': values})
+                fig = px.bar(percentile_list, x='Treatment Conditions', y ='Proportion', color='Functional Groups', color_discrete_sequence=px.colors.qualitative.G10)
+                fig.update_layout(title_text= 'Dominant Functional Groups', title_x = 0.5)
                 fig.update_layout(plot_bgcolor='rgb(255,255,255)')
-                InstructionsForAnalysis = 'Proportions Cell Functional Classification: displays proportions of secreting cytokines as classified by Isoplexis.'
+                InstructionsForAnalysis = 'Proportions Dominant Functional Groups: displays proportions of secreting cytokines as classified by Isoplexis.'
                 return fig, InstructionsForAnalysis, new_df.to_dict('records')
             #need this portion since will not initially update
             except:
                 treatment, effectors, values = changedf(new_df)
-                percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Classification': effectors, 'Proportion': values})
-                fig = px.bar(percentile_list, x='Treatment Conditions', y ='Proportion', color='Classification', color_discrete_sequence=px.colors.qualitative.G10)
-                fig.update_layout(title_text= 'Cell Functional Classification', title_x = 0.5)
+                percentile_list = pd.DataFrame({'Treatment Conditions': treatment, 'Functional Groups': effectors, 'Proportion': values})
+                fig = px.bar(percentile_list, x='Treatment Conditions', y ='Proportion', color='Functional Groups', color_discrete_sequence=px.colors.qualitative.G10)
+                fig.update_layout(title_text= 'Dominant Functional Groups', title_x = 0.5)
                 fig.update_layout(plot_bgcolor='rgb(255,255,255)')
-                InstructionsForAnalysis = 'Proportions Cell Functional Classification: displays proportions of secreting cytokines as classified by Isoplexis.'
+                InstructionsForAnalysis = 'Proportions Dominant Functional Groups: displays proportions of secreting cytokines as classified by Isoplexis.'
                 return fig, InstructionsForAnalysis, new_df.to_dict('records')
             
-
 def changedf(new_df):
     values = new_df.to_numpy().flatten()
     list_a = list(new_df.columns)

@@ -7,51 +7,55 @@ from dash import no_update
 import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
-dash.register_page(__name__, title='Clustering')
 
 centerStyle = {'textAlign': 'center'}
 
-
 layout = html.Div(
-    [html.H1("Hierarchial Clustering"),
-        html.H4("Select subset to view for Hierarchial Clustering"),
-        html.P("This selection will change both all cytokine and individual cytokine dendrograms and heatmaps."),
-        dcc.RadioItems(id='heatmap_dendro_options',
-                       value="All", style={'textAlign': 'center'},
-                       inputStyle={"margin-right": "5px", "margin-left": "5px"}),
+    [
+        html.H2("Hierarchial Clustering", style=centerStyle),
+        html.Div([
+            html.H4("Select subset to view for Hierarchial Clustering"),
+            html.P("This section will change both all cytokine and individual cytokine dendrograms and heatmaps."),
+            dcc.RadioItems(id='heatmap_dendro_options',
+                        value="All",     style={'textAlign': 'center'},
+                        inputStyle={"margin-right": "5px", "margin-left": "5px"}),
+        ], className = "shadow p-3 mb-5 bg-white rounded"),
 
-        html.H2("Hierarchial Clustering Across All Cytokines"),
-        html.H4(
-            "Dendrogram and Heatmap are clustered based on cytokine expression value similarities."),
-        html.P(
-            "Note: the Cell ID in the legend represents the original cell ID of the uploaded data."),
+        html.Div([
+            html.H4("Hierarchial Clustering Across All Cytokines"),
+            html.P(
+                "Dendrogram and Heatmap are clustered based on cytokine expression value similarities."),
+            html.P(
+                "Note: the Cell ID in the legend represents the original cell ID of the uploaded data."),
 
-        dbc.Row([dbc.Col(html.Div([
-            dcc.Graph(id='graph_dendro_all'),
-        ])),
-            dbc.Col(html.Div([
-                dcc.Graph(id='graph_hm_all')
-            ]))]),
+            dbc.Row([dbc.Col(html.Div([
+                dcc.Graph(id='graph_dendro_all'),
+            ])),
+                dbc.Col(html.Div([
+                    dcc.Graph(id='graph_hm_all')
+                ]))]),
+        ], className = "shadow p-3 mb-5 bg-white rounded"),
 
-        html.H2("Hierarchial Clustering For Selected Individual Cytokine"),
-        html.H4(
-            "Dendrogram and Heatmap are clustered based on cytokine expression value similarities."),
-        html.P(
-            "Note: the Cell ID in the legend represents the original cell ID of the uploaded data."),
+        html.Div([
+            html.H4("Hierarchial Clustering For Selected Individual Cytokine"),
+            html.P(
+                "Dendrogram and Heatmap are clustered based on cytokine expression value similarities."),
+            html.P(
+                "Note: the Cell ID in the legend represents the original cell ID of the uploaded data."),
 
-        dbc.Row([dbc.Col(html.Div([
-            dcc.Graph(id='graph_dendro_sub'),
-        ])),
-            dbc.Col(html.Div([
-                dcc.Graph(id='graph_hm_sub')
-            ]))]),
-        html.P("Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."),
-     ], style=centerStyle
-)
+            dbc.Row([dbc.Col(html.Div([
+                dcc.Graph(id='graph_dendro_sub'),
+            ])),
+                dbc.Col(html.Div([
+                    dcc.Graph(id='graph_hm_sub')
+                ]))]),
+            html.P("Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."),
+        ], className = "shadow p-3 mb-5 bg-white rounded"),
+
+     ])
+
 
 # callback for all cytokine heatmap and dendrogram
-
-
 @callback(
     Output('heatmap_dendro_options', 'options'),
     Input('analysis-button', 'n_clicks'),
@@ -79,8 +83,8 @@ def whole_dendro_cyto(n, cyto_list, option,  df):
             fig = dendrogram(n, cyto_list, option, df)
             fig.update_layout(
                 title_text="Hierarchial Clustered Dendrogram for All Cytokines", title_x=0.5)
-            fig.update_layout(width=700, height=700,
-                              plot_bgcolor='rgb(255,255,255)')
+            # fig.update_layout(width=650, height=650)
+            fig.update_layout(plot_bgcolor='rgb(255,255,255)')
             return(fig)
     except:
         return no_update
@@ -133,7 +137,7 @@ def sub_heatmap(n, cyto_list, option, df):
             fig = df_heatmap(n, cyto_list, df)
             fig.update_layout(
                 title_text="Clustered Heatmap for All Cytokines", title_x=0.5)
-            fig.update_layout(width=700, height=700)
+            # fig.update_layout(width=650, height=650)
             fig.update_yaxes(title_text='Original Cell ID')
             return(fig)
     except:
@@ -194,7 +198,7 @@ def sub_dendro_cyto(n, cytokine, cyto_list,  option, df):
         fig.update_layout(title_text=cytokine +
                           " Hierarchial Clustered Dendrogram", title_x=0.5)
         fig.update_layout(plot_bgcolor='rgb(255,255,255)')
-        fig.update_layout(width=700, height=700)
+        # fig.update_layout(width=650, height=650)
         return(fig)
 
 
@@ -217,6 +221,6 @@ def sub_heatmap_cyto(n, cytokine, cyto_list,  option, df):
         fig = df_heatmap(n, cyto_list, df_cluster)
         fig.update_layout(title_text=cytokine +
                           " Clustered Heatmap", title_x=0.5)
-        fig.update_layout(width=700, height=700)
+        # fig.update_layout(width=650, height=650)
         fig.update_yaxes(title_text='Original Cell ID')
         return(fig)

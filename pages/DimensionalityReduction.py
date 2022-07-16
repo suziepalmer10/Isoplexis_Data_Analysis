@@ -8,7 +8,6 @@ from dash import no_update
 import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
-dash.register_page(__name__, title="Dimensionality Reduction")
 
 # methods for PCA and TSNE
 method_pcatsne = ["Standard Scalar Normalized", "Not Normalized"]
@@ -19,34 +18,39 @@ plot_types = ['2D', '3D']
 centerStyle = {'textAlign': 'center'}
 
 layout = html.Div(
-    [html.H2("Dimensionality Reduction"),
-        html.H4("PCA is a linear dimensionality reduction technique and TSNE is a non-linear dimensionality reduction technique."),
-        html.H5("Note: Dimensionality reduction analyses may differ from  IsoSpeak. IsoSpeak uses unthresholded data, while the data file the user uploaded has a 2% threshold. Values below this threshold become 0."),
-        html.H5(
-            "TSNE might take a minute to reload since this is calculated in real-time."),
-        html.H4("Select whether or not to normalize dimensionality reduction plots."),
-        html.P("Data is normally normalized before performing dimensionality reduction."),
-        dcc.RadioItems(
-        id="method_radio",
-        options=method_pcatsne,
-        value="Standard Scalar Normalized",
-        inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
-        style=centerStyle),
-        html.H4("Select to visualize the plot in 2D or 3D."),
-        dcc.RadioItems(
-        id="plot_types",
-        options=plot_types,
-        value="3D",
-        inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
-        style=centerStyle),
+    [html.H2("Dimensionality Reduction", style=centerStyle),
+        
+        html.Div([
+            html.H4("Introduction"),
+            html.P("PCA is a linear dimensionality reduction technique and TSNE is a non-linear dimensionality reduction technique."),
+            html.P("Note: Dimensionality reduction analyses may differ from  IsoSpeak. IsoSpeak uses unthresholded data, while the data file the user uploaded has a 2% threshold. Values below this threshold become 0."),
+            html.P(
+                "TSNE might take a minute to reload since this is calculated in real-time."),
+        ], className = "shadow p-3 mb-5 bg-white rounded"),
 
-        dbc.Row([dbc.Col(html.Div(
+        html.Div([
+            html.H4("Select whether or not to normalize dimensionality reduction plots."),
+            html.P("Data is normally normalized before performing dimensionality reduction."),
+            dcc.RadioItems(
+                id="method_radio",
+                options=method_pcatsne,
+                value="Standard Scalar Normalized",
+                inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
+                style=centerStyle),
+            html.H4("Select to visualize the plot in 2D or 3D."),
+            dcc.RadioItems(id="plot_types",
+                options=plot_types,
+                value="3D",
+                inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
+                style=centerStyle),
+        html.Br(),
+        dbc.Row([
+            dbc.Col(html.Div(
                 html.Div(dcc.Graph(id='dim_red_fig')),
                 ), width = 6),
             dbc.Col(html.Div([
                 html.Div(dcc.Graph(id='ts_dim_red_fig')),
-                html.H5("Select Perplexity of Nearest Neighbors: ",
-                        style=centerStyle),
+                html.H6("Select Perplexity of Nearest Neighbors: "),
                 html.P(
                     "Perplexity is the balance between local and global aspects of the data."),
                 dcc.RadioItems(
@@ -55,8 +59,8 @@ layout = html.Div(
                     value=30,
                     inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
                     style=centerStyle),
-                html.H5("Select Number of TSNE Iterations: ",
-                        style=centerStyle),
+                html.Br(),
+                html.H6("Select Number of TSNE Iterations: "),
                 html.P(
                     "Note: The more iterations performed, the slower the algorithm runs."),
                 dcc.RadioItems(
@@ -65,8 +69,9 @@ layout = html.Div(
                     value=500,
                     inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
                     style=centerStyle)
-            ]), width = 6)])
-     ], style=centerStyle
+            ]), width = 6)]),
+        ], className = "shadow p-3 mb-5 bg-white rounded"),
+     ]
 )
 
 # callback: pca function

@@ -6,46 +6,46 @@ import pandas as pd
 import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
-dash.register_page(
-    __name__, title='Polyfunctionality and Dominant Functional Groups')
 
 options_effector = ['proportions', 'raw']
 centerStyle = {'textAlign': 'center'}
 
 layout = html.Div([
-    html.H2(id="title_poly_analysis"),
-    html.H4(id='total_polyfunction'),
-    dcc.Store(id='poly_df'),
-    dcc.Store(id='effector_df'),
-    dbc.Row(
-        [
-            dbc.Col(html.Div([dcc.Graph(id="polyfunctional_bar"),
-                              html.P(id="instructions_poly_analysis"),
-                              html.Button("Download CSV", id="btn_csv1"),
-                              dcc.Download(id="poly-download-dataframe-csv")],
-                             )),
+    html.H2("Polyfunctional Analysis", style=centerStyle),
+    html.Div([
+        html.H4(id='total_polyfunction'),
+        dcc.Store(id='poly_df'),
+        dcc.Store(id='effector_df'),
+        dbc.Row(
+            [
+                dbc.Col(html.Div([dcc.Graph(id="polyfunctional_bar"),
+                                html.P(id="instructions_poly_analysis"),
+                                html.Button("Download CSV", id="btn_csv1"),
+                                dcc.Download(id="poly-download-dataframe-csv")],
+                                )),
 
-            dbc.Col(html.Div([
-                dcc.Graph(id="effector_bar"),
-                html.P("Select to view proportional or raw data:"),
-                dcc.RadioItems(
-                    id="proportions_or_raw",
-                    options=options_effector,
-                    value='proportions',
-                    inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
-                    style=centerStyle),
-                html.P(id="instructions_effector_analysis"),
-                html.Button("Download CSV", id="btn_csv2"),
-                dcc.Download(id="effector-download-dataframe-csv")
-            ])),
-        ])], style=centerStyle)
+                dbc.Col(html.Div([
+                    dcc.Graph(id="effector_bar"),
+                    html.P("Select to view proportional or raw data:"),
+                    dcc.RadioItems(
+                        id="proportions_or_raw",
+                        options=options_effector,
+                        value='proportions',
+                        inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
+                        style=centerStyle),
+                    html.P(id="instructions_effector_analysis"),
+                    html.Button("Download CSV", id="btn_csv2"),
+                    dcc.Download(id="effector-download-dataframe-csv")
+                ])),
+            ])
+        ], className = "shadow p-3 mb-5 bg-white rounded"),
+    ])
 
 # polyfunctional graph and number of polyfunctional cells
 
 
 @callback(Output('polyfunctional_bar', 'figure'),
           Output('total_polyfunction', 'children'),
-          Output('title_poly_analysis', 'children'),
           Output('instructions_poly_analysis', 'children'),
           Output('poly_df', 'data'),
           Input('analysis-button', 'n_clicks'),
@@ -111,9 +111,8 @@ def polyfunctional_bar_(n, cyto_list, df):
             fig.update_layout(plot_bgcolor='rgb(255,255,255)')
             polyCells = 'Total Number of Polyfunctional Cells:  ' + \
                 str(total_count)
-            TitleForAnalysis = "Polyfunctional Analysis"
             InstructionsForAnalysis = 'Percent Polyfunctional Cytokines Secreting: calculates the proportion of cells that express two or more proteins.'
-            return(fig, polyCells, TitleForAnalysis, InstructionsForAnalysis, df.to_dict('records'))
+            return(fig, polyCells, InstructionsForAnalysis, df.to_dict('records'))
     except:
         return no_update
 

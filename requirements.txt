@@ -9,3 +9,4 @@ seaborn
 sklearn
 statsmodels 
 dash-bootstrap-templates
+openpyxl

@@ -1,20 +1,21 @@
+import pages.Contact
+import pages.Statistics
+import pages.Polyfunctionality
+import pages.DimensionalityReduction
+import pages.Clustering
+import pages.Upload
+import pages.Overview
+import pages.Contact
+
 import dash
 import dash_bootstrap_components as dbc
-import base64
-import datetime
-import io
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import pandas as pd
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 from dash import no_update
-
-
-secretome_selection = ['Mouse Adaptive Immune', 'Human Adaptive Immune', 'Non-Human Primate Adaptive Immune',
-                       'Human Inflammation', 'Human Innate Immune']
 # this is the original description list
-description_list = ["Donor", "Cell Subset", "Stimulation"]
 
 mouse_adaptive_immune = {'BCA-1': 'Chemoattractive',
                          'CCL-11': 'Chemoattractive',
@@ -163,168 +164,78 @@ centerStyle = {'textAlign': 'center'}
 
 
 app = dash.Dash(
-    __name__, 
+    __name__,
     external_stylesheets=[
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
+
         dbc.themes.FLATLY],
     # suppress_callback_exceptions set to True for dynamic layout
     suppress_callback_exceptions=True,
-    use_pages=True
+    use_pages=False
 )
 
 # code for navigation bar
 navbar = dbc.NavbarSimple(
-    dbc.DropdownMenu(
-        [
-            dbc.DropdownMenuItem(page["title"], href=page["path"])
-            for page in dash.page_registry.values()
-            if page["module"] != "pages.not_found_404"
-        ],
-        nav=True,
-        label="Data Analysis Options",
-    ),
+    [
+        html.Div([
+            html.A(dbc.Button([html.I(className="fa fa-twitter"), " Twitter"], color="light"),
+                   href="https://twitter.com/intent/tweet?text=Tweet%20from%20Isoplexis%20Data%20Analysis"),
+            html.A(dbc.Button([html.I(className="fa fa-github"), " GitHub"], color="light"),
+                   href="https://github.com/suziepalmer10/Isoplexis_Data_Analysis", target="_blank"),
+            html.A(dbc.Button([html.I(className="fa fa-envelope"), " Email"], color="light"),
+                   href="mailto:suzette.palmer@utsouthwestern.edu?cc=xiaowei.zhan@utsouthwestern.edu")
+        ], className="d-grid gap-2 d-md-flex justify-content-md-end")
+    ],
     brand="Isoplexis Data Analysis",
+    brand_href="#",
     color="primary",
     dark=True,
     className="mb-2",
 )
-# code for user file upload
-userInput = dcc.Upload(
-    id='upload-data',
-    children=html.Div([
-        'Drag and Drop or ',
-        html.A('Select Files')
-    ]),
-    style={
-        'width': '100%',
-        'height': '60px',
-        'lineHeight': '60px',
-        'borderWidth': '1px',
-        'borderStyle': 'dashed',
-        'borderRadius': '5px',
-        'textAlign': 'center',
-        'margin': '10px'
-    },
-    # Allow multiple files to be uploaded
-    multiple=True
-)
 
 
-def parse_contents(contents, filename, date):
-    content_type, content_string = contents.split(',')
-    decoded = base64.b64decode(content_string)
-    try:
-        if 'csv' in filename:
-            # Assume that the user uploaded a CSV file
-            df = pd.read_csv(
-                io.StringIO(decoded.decode('utf-8')))
-            # this column creates a new column which combines all of the descriptions
-            df['Treatment Conditions'] = df[description_list].apply(
-                lambda x: ' '.join(x.dropna().astype(str)),
-                axis=1)
-            # this list will be allow the user to plot graphs in desired order
-            df_labels_un = list(df['Treatment Conditions'].unique())
-            # heatmap index positions maintained for cells
-            num_cells = range(1, len(df)+1)
-            df['Permanent Index'] = num_cells
-        elif 'xls' in filename:
-            # Assume that the user uploaded an excel file
-            df = pd.read_excel(io.BytesIO(decoded))
-            df['Treatment Conditions'] = df[description_list].apply(
-                lambda x: ' '.join(x.dropna().astype(str)),
-                axis=1)
-            # this list will be allow the user to plot graphs in desired order
-            df_labels_un = list(df['Treatment Conditions'].unique())
-            # heatmap index positions maintained for cells
-            num_cells = range(1, len(df)+1)
-            df['Permanent Index'] = num_cells
-    except Exception as e:
-        print(e)
-        return html.Div([
-            'There was an error processing this file.'
-        ])
+layouts = {
+    'tab-overview': (pages.Overview.layout),
+    'tab-upload': pages.Upload.layout,
+    'tab-clustering': pages.Clustering.layout,
+    'tab-dimensionreduction':  pages.DimensionalityReduction.layout,
+    'tab-polyfunctionality': pages.Polyfunctionality.layout,
+    'tab-statistics': pages.Statistics.layout,
+    'tab-contact': pages.Contact.layout,
+}
 
-    return html.Div([
-        html.H4('Uploaded File Information: ', style=centerStyle),
-        html.H5(filename),
-        html.H6(datetime.datetime.fromtimestamp(date)),
-        # this stores the data to be used for future callbacks
-        dcc.Store(id='stored-data', data=df.to_dict('records')),
-        html.H4('Step 2: Select the Assay used for the Isoplexis Analysis: ', style={
-                'textAlign': 'left'}),
-        html.P("This will determine the cytokines read for the assay.",
-               style={'textAlign': 'left'}),
-        dcc.RadioItems(
-            id="secretome_type",
-            options=secretome_selection,
-            value="Mouse Adaptive Immune",
-            inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
-            style=centerStyle),
-        html.H4('Step 3: Select the Conditions that will be Analyzed:',
-                style={'textAlign': 'left'}),
-        html.P("Note: The order (left to right) of items selected will be the same order for the graphs. ", style={
-               'textAlign': 'left'}),
-        # list for user to reorder data
-        dcc.Dropdown(
-            id="ordered_list",
-            options=df_labels_un,
-            multi=True),
-        html.Button(id="submit-button", children="Reorder Data"),
-        html.H4('Step 4: Select the Button Below to Analyze Isoplexis Data:', style={
-                'textAlign': 'left'}),
-        html.Div(html.Button(id="analysis-button",
-                 children="Analyze Isoplexis Data"), style={'textAlign': 'left'}),
-        html.P('Note: If you decide to reorder your data after selecting the analysis button, you will need to repeat steps 3 and 4 again.',
-               style={'textAlign': 'left'}),
-        html.H4("Step 5: To view individual cytokine analysis, select a cytokine from this list below.", style={
-                'textAlign': 'left'}),
-        html.P("Note: each analysis page has a section to view individual cytokines. If the cytokine has no value, it will not appear on this list.", style={
-               'textAlign': 'left'}),
-        html.Div(dcc.Dropdown(
-            id='indiv_cyto_dropdown',
-            placeholder="Select a cytokine for individual cytokine analysis",
-            clearable=False),
-            style={"width": "50%"}),
-
-        html.Div(html.Button(id="indiv-cyto-button",
-                 children="Analyze Individual Cytokine"), style={'textAlign': 'left'}),
-        html.P("In order to change individual cytokine, select desired cytokine from the dropdown menu and click 'Analyze Individual Cytokine' button again.", style={
-               'textAlign': 'left'})
-
-    ])
-
-
-app.layout = dbc.Container(
+app.layout = html.Div(
     [navbar,
-     # header
-     html.H1('Isoplexis Single Cell Secretome Data Analysis', style=centerStyle),
-     html.H2('Suzette Palmer', style=centerStyle),
-     html.H3('Zhan and Koh Labs', style=centerStyle),
-     html.H4('University of Texas Southwestern Medical Center', style=centerStyle),
-     # user file input
-     html.H4('Step 1: Upload Isoplexis Data Analysis File:'),
-     html.P('Note: Formats allowed are comma separated values (csv) or excel (xls).'),
-     userInput,
-     # output file information
-     html.Div(id='output-data-upload', style=centerStyle),
-     dcc.Store(id='cyto_list'),
-     dcc.Store(id='effector_list'),
-     dcc.Store(id='stored-data-reordered'),
-     dcc.Store(id='color_discrete_map'),
-     dash.page_container
-     ], fluid=True)
+    dbc.Container(
+        dcc.Tabs(id="tabs-header", children=[
+            dcc.Tab(label='Overview', children=layouts['tab-overview']),
+            dcc.Tab(label='Upload', children=layouts['tab-upload']),
+            dcc.Tab(label='Clustering', children=layouts['tab-clustering']),
+            dcc.Tab(label='Dimemsion Reduction',
+                    children=layouts['tab-dimensionreduction']),
+            dcc.Tab(label='Polyfunctionality',
+                    children=layouts['tab-polyfunctionality']),
+            dcc.Tab(label='Statistics', children=layouts['tab-statistics']),
+#            dcc.Tab(label='Contact', children=layouts['tab-contact']),
+
+        ])
+    )
+        #  dbc.Container(
+        #      [
+        #          dash.page_container
+        #      ], fluid=False)
+     ])
 
 
-@app.callback(Output('output-data-upload', 'children'),
-              Input('upload-data', 'contents'),
-              State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
-def update_output(list_of_contents, list_of_names, list_of_dates):
-    if list_of_contents is not None:
-        children = [
-            parse_contents(c, n, d) for c, n, d in
-            zip(list_of_contents, list_of_names, list_of_dates)]
-        return children
-
+# @app.callback(Output('tabs-content', 'children'),
+#               Input('tabs-header', 'value'))
+# def render_content(tab):
+#     if tab == 'tab-overview':
+#         return layouts[tab]
+#     elif tab == 'tab-upload':
+#         return layouts[tab]
+#     elif tab == 'tab-clustering':
+#         return layouts[tab]
 
 @app.callback(Output('cyto_list', 'data'),
               Output('effector_list', 'data'),

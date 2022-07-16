@@ -10,7 +10,6 @@ from dash import no_update
 import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
-dash.register_page(__name__, title='Distribution and Statistics')
 
 # bins used for the histogram
 bins = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -19,90 +18,99 @@ centerStyle = {'textAlign': 'center'}
 
 layout = html.Div(
     [
-        html.H2("Percent Cytokines Secreted Across Treatment Conditions",
-                style=centerStyle),
-        html.P("Percent Cytokine Secreted: calculated by taking non-zero proportions for each treatment condition across each cytokine.", style=centerStyle),
+        html.H2("Distributions and Statistical tests", style=centerStyle),
+    html.Div([
+        html.H4("Percent Cytokines Secreted Across Treatment Conditions"),
+        html.P("Percent Cytokine Secreted: calculated by taking non-zero proportions for each treatment condition across each cytokine."),
         dcc.Graph(id="bar_plot_all"),
+    ], className = "shadow p-3 mb-5 bg-white rounded"),
+   
         dcc.Store(id='nz_table'),
+    html.Div([
+        html.H4("Individual Cytokine Distribution", style=centerStyle),
+        html.P("Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."),
         dbc.Row([
             dbc.Col(html.Div([
-                html.H4("Cytokine Statistics for Individual Cytokine",
-                        style=centerStyle),
+                html.H6("Select Treatment Condition"),
                 dcc.RadioItems(
                     id="stat_options",
                     value="All",
                     inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
                     style=centerStyle),
-                html.Div(html.H4(id='value_sum')),
-                html.Div(html.H4(id='zero_sum')),
-                html.Div(html.H4(id='mean_std_all')),
-                html.Div(html.H4(id='min_max_all')),
-                html.Div(html.H4(id='mean_std_nz')),
-                html.Div(html.H4(id='min_max_nz')),
-            ]), width={"size": 4}),
+                html.Br(),
+                html.H6("Summary Cytokine Statistics"),
+                html.Div(html.P(id='value_sum')),
+                html.Div(html.P(id='zero_sum')),
+                html.Div(html.P(id='mean_std_all')),
+                html.Div(html.P(id='min_max_all')),
+                html.Div(html.P(id='mean_std_nz')),
+                html.Div(html.P(id='min_max_nz')),
+            ])),
 
             dbc.Col(html.Div([
-                html.H4("Statistical Tests for Differences in Cytokine Secretion", style={
-                        'textAlign': 'center'}),
-                html.H4(dcc.Markdown('''_Select Condition 1:_
-        '''), style=centerStyle),
+                dcc.Graph(id="graph_hist"),
+                html.P("Select Bin Size:"),
+                dcc.RadioItems(
+                    id="bins",
+                    options=bins,
+                    value=20,
+                    style={'textAlign': 'center'}, inputStyle={"margin-right": "5px", "margin-left": "5px"}),
+                html.Br(),
+                html.P("Select Box Plot, Violin Plot or Rug Plot:"),
+                dcc.RadioItems(
+                    id='distribution',
+                    options=[{'label': 'Box Plot', 'value': 'box'}, {'label': 'Violin Plot', 'value': 'violin'},
+                             {'label': 'Rug Plot', 'value': 'rug'}],
+                    value='box', inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
+                    style=centerStyle)]))
+        ]),
+    ], className = "shadow p-3 mb-5 bg-white rounded"),
+
+    html.Div([
+        html.H4("Statistical Tests for Differences in Cytokine Secretion", style=centerStyle),
+        html.P("Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."),
+        dbc.Row([
+            dbc.Col([
+
+                html.P(dcc.Markdown('''_Select Condition 1:_''')),
                 dcc.RadioItems(id="option_1_stat", inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
                                style=centerStyle),
-                html.H4(dcc.Markdown('''_Select Condition 2:_
-        '''), style=centerStyle),
+                html.Br(),
+                html.P(dcc.Markdown('''_Select Condition 2:_''')),
                 dcc.RadioItems(id="option_2_stat", inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
                                style=centerStyle),
+            ])]),
+        html.Br(),
+        dbc.Row([    
+            dbc.Col([
                 # NZ Proportion Stats Call
                 html.H4(dcc.Markdown('''**Percent Cytokines Secreting - Proportion Test**
         '''), style=centerStyle),
                 html.P('The Non-Zero Proportion Test determines whether the non-zero proportion of two samples are significantly different from each other.', style=centerStyle),
                 html.Div(id='stats_nz', style=centerStyle),
                 html.Div(id='p_val_nz', style=centerStyle),
+                html.Div([
+                    dcc.Graph(id='bar_individual'),
+                ])
+            ]),
+            dbc.Col([
                 # KS Test
                 html.H4(dcc.Markdown('''**Kolmogorov-Smirnov Test**
         '''), style=centerStyle),
                 html.P("The Kolmogorov-Smirnov Test is a non-parametric test that determines if two samples are significantly different from each other.", style=centerStyle),
                 html.Div(id='stats_ks', style=centerStyle),
-                html.Div(id='p_val_ks', style=centerStyle)
-            ]), width={"size": 4}),
-
-            dbc.Col(html.Div([
-                dcc.Graph(id='bar_individual'),
-                html.P(
-                    "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."),
-
-            ]), width={"size": 4})
-
-
-        ]),
-        html.H2("Individual Cytokine Distribution", style=centerStyle),
-        dbc.Row(
-            [dbc.Col(html.Div([
-                dcc.Graph(id="graph_hist"),
-                html.P("Select Bin Size", style={'textAlign': 'center'}),
-                dcc.RadioItems(
-                    id="bins",
-                    options=bins,
-                    value=20,
-                    style={'textAlign': 'center'}, inputStyle={"margin-right": "5px", "margin-left": "5px"}),
-                html.P("Select Box Plot, Violin Plot or Rug Plot:",
-                       style={'textAlign': 'center'}),
-                dcc.RadioItems(
-                    id='distribution',
-                    options=[{'label': 'Box Plot', 'value': 'box'}, {'label': 'Violin Plot', 'value': 'violin'},
-                             {'label': 'Rug Plot', 'value': 'rug'}],
-                    value='box', inline=True, inputStyle={"margin-right": "5px", "margin-left": "5px"},
-                    style=centerStyle)])),
-                dbc.Col(html.Div([
+                html.Div(id='p_val_ks', style=centerStyle),
+                html.Div([
                     dcc.Graph(id="graph_dens"),
                     html.P(
                         "Density plots allow for the visualization of the distribution of a numeric variables for one or more groups.")
-                ]))
-             ], style=centerStyle),
-    ])
+                ])
+             ])
+        ]),
+    ], className = "shadow p-3 mb-5 bg-white rounded"),
+])
 
 # callback for all statistics options
-
 
 @callback(
     Output('stat_options', 'options'),
@@ -119,7 +127,6 @@ def histdendro_all_callback(n, selected_cytokine):
         no_update
 
 # callback for treatment conditions
-
 
 @callback(
     Output('option_1_stat', 'options'),
@@ -174,34 +181,34 @@ def cyto_stats(n, cytokine, condition, df):
         # Across all samples and Treatment Conditions
         # Number of cells for cytokine with non-zero values
         value_sum_1 = (comp_1 != 0).sum()
-        value_sum = f"{value_sum_1:.4e}"
+        value_sum = f"{value_sum_1:d}"
         value_sum = "Number of Cells with Values: " + str(value_sum)
         # Number of cells for cytokine with zero values
         zero_sum_1 = (comp_1 == 0).sum()
-        zero_sum = f"{zero_sum_1:.4e}"
+        zero_sum = f"{zero_sum_1:d}"
         zero_sum = "Number of Cells with No Values: " + str(zero_sum)
         # mean of all cells across cytokine
         mean_df_all_1 = comp_1.mean()
-        mean_df_all = f"{mean_df_all_1:.4e}"
+        mean_df_all = f"{mean_df_all_1:.4g}"
         std_df_all_1 = comp_1.std()
-        std_df_all = f"{std_df_all_1:.4e}"
+        std_df_all = f"{std_df_all_1:.4g}"
         mean_std_all = "Mean and Standard Deviation Across All Cells: " + \
             str(mean_df_all) + " and " + str(std_df_all)
         min_df_all_1 = comp_1.min()
-        min_df_all = f"{min_df_all_1:.4e}"
+        min_df_all = f"{min_df_all_1:.4g}"
         max_df_all_1 = comp_1.max()
-        max_df_all = f"{max_df_all_1:.4e}"
+        max_df_all = f"{max_df_all_1:.4g}"
         min_max_all = "Minimum and Maximum Values Across All Cells: " + \
             str(min_df_all) + " and " + str(max_df_all)
         # stats of Non-zero cells across cytokine
         mean_df_nz_1 = comp_1[comp_1 != 0].mean()
-        mean_df_nz = f"{mean_df_nz_1:.4e}"
+        mean_df_nz = f"{mean_df_nz_1:.4g}"
         std_df_nz_1 = comp_1[comp_1 != 0].std()
-        std_df_nz = f"{std_df_nz_1:.4e}"
+        std_df_nz = f"{std_df_nz_1:.4g}"
         min_df_nz_1 = comp_1[comp_1 != 0].min()
-        min_df_nz = f"{min_df_nz_1:.4e}"
+        min_df_nz = f"{min_df_nz_1:.4g}"
         max_df_nz_1 = comp_1[comp_1 != 0].max()
-        max_df_nz = f"{max_df_nz_1:.4e}"
+        max_df_nz = f"{max_df_nz_1:.4g}"
         mean_std_nz = "Mean and Standard Deviation Across All Non-Zero Cells: " + \
             str(mean_df_nz) + " and " + str(std_df_nz)
         min_max_nz = "Minimum and Maximum Values Across All Non-Zero Cells: " + \

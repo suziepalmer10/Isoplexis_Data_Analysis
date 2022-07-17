@@ -34,7 +34,10 @@ layout = html.Div(
             [
                 html.H4("Individual Cytokine Distribution", style=centerStyle),
                 html.P(
-                    "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."
+                    [
+                        html.I(className="fa fa-info"),
+                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+                    ]
                 ),
                 dbc.Row(
                     [
@@ -54,7 +57,7 @@ layout = html.Div(
                                     ),
                                     html.Br(),
                                     html.H6("Summary Cytokine Statistics"),
-                                    html.Div(id="stats-table")
+                                    html.Div(id="stats-table"),
                                 ]
                             )
                         ),
@@ -105,7 +108,10 @@ layout = html.Div(
                     style=centerStyle,
                 ),
                 html.P(
-                    "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."
+                    [
+                        html.I(className="fa fa-sticky-note"),
+                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+                    ]
                 ),
                 dbc.Row(
                     [

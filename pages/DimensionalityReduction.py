@@ -27,7 +27,10 @@ layout = html.Div(
                     "PCA is a linear dimensionality reduction technique and TSNE is a non-linear dimensionality reduction technique."
                 ),
                 html.P(
-                    "Note: Dimensionality reduction analyses may differ from  IsoSpeak. IsoSpeak uses unthresholded data, while the data file the user uploaded has a 2% threshold. Values below this threshold become 0."
+                    [
+                        html.I(className="fa fa-sticky-note"),
+                        "Note: Dimensionality reduction analyses may differ from  IsoSpeak. IsoSpeak uses unthresholded data, while the data file the user uploaded has a 2% threshold. Values below this threshold become 0.",
+                    ]
                 ),
                 html.P(
                     "TSNE might take a minute to reload since this is calculated in real-time."
@@ -72,7 +75,12 @@ layout = html.Div(
                         dbc.Col(
                             html.Div(
                                 [
-                                    html.Div(dcc.Loading(id = "loading-tsne", children = dcc.Graph(id="ts_dim_red_fig"))),
+                                    html.Div(
+                                        dcc.Loading(
+                                            id="loading-tsne",
+                                            children=dcc.Graph(id="ts_dim_red_fig"),
+                                        )
+                                    ),
                                     html.H6("Select Perplexity of Nearest Neighbors: "),
                                     html.P(
                                         "Perplexity is the balance between local and global aspects of the data."
@@ -91,7 +99,10 @@ layout = html.Div(
                                     html.Br(),
                                     html.H6("Select Number of TSNE Iterations: "),
                                     html.P(
-                                        "Note: The more iterations performed, the slower the algorithm runs."
+                                        [
+                                            html.I(className="fa fa-sticky-note"),
+                                            "Note: The more iterations performed, the slower the algorithm runs.",
+                                        ]
                                     ),
                                     dcc.RadioItems(
                                         id="iterations_radio",
@@ -172,7 +183,8 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
     except:
         return no_update
 
-#TODO: add loading...
+
+# TODO: add loading...
 # callback: tsne function
 @callback(
     Output("ts_dim_red_fig", "figure"),

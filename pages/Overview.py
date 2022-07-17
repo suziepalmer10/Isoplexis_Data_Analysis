@@ -183,7 +183,7 @@ instructions = dbc.Row(
 layout = html.Div(
     [
         instructions,
-        dbc.Row([dbc.Col(html.Div(html.Hr()), width={"size": 8, "offset": 2})]),
+        dbc.Row([dbc.Col(html.Div(html.Hr()), width={"size": 8, "offset": 2})], className = "mt-4 mb-4"),
         html.H2(
             dcc.Markdown(
                 """
@@ -235,7 +235,7 @@ layout = html.Div(
         ),
         dbc.Row([dbc.Col(), dbc.Col(html.Div(human_inn_table), width="8"), dbc.Col()]),
         # contact info
-        dbc.Row([dbc.Col(html.Div(html.Hr()), width={"size": 8, "offset": 2})]),
+        dbc.Row([dbc.Col(html.Div(html.Hr()), width={"size": 8, "offset": 2})], className = "mt-4 mb-4"),
         html.H2(
             dcc.Markdown(
                 """
@@ -273,5 +273,6 @@ layout = html.Div(
             ),
             style=centerStyle,
         ),
+        html.P(" ", className = "mb-5"),
     ]
 )

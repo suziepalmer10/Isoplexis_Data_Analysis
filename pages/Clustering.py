@@ -35,7 +35,10 @@ layout = html.Div(
                     "Dendrogram and Heatmap are clustered based on cytokine expression value similarities."
                 ),
                 html.P(
-                    "Note: the Cell ID in the legend represents the original cell ID of the uploaded data."
+                    [
+                        html.I(className="fa fa-sticky-note"),
+                        "Note: the Cell ID in the legend represents the original cell ID of the uploaded data.",
+                    ]
                 ),
                 dbc.Row(
                     [
@@ -59,7 +62,10 @@ layout = html.Div(
                     "Dendrogram and Heatmap are clustered based on cytokine expression value similarities."
                 ),
                 html.P(
-                    "Note: the Cell ID in the legend represents the original cell ID of the uploaded data."
+                    [
+                        html.I(className="fa fa-sticky-note"),
+                        "Note: the Cell ID in the legend represents the original cell ID of the uploaded data.",
+                    ]
                 ),
                 dbc.Row(
                     [
@@ -74,7 +80,10 @@ layout = html.Div(
                     ]
                 ),
                 html.P(
-                    "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5."
+                    [
+                        html.I(className="fa fa-sticky-note"),
+                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+                    ]
                 ),
             ],
             className="shadow p-3 mb-5 bg-white rounded",

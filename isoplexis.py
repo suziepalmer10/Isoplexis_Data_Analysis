@@ -177,12 +177,14 @@ centerStyle = {"textAlign": "center"}
 app = dash.Dash(
     __name__,
     external_stylesheets=[
-        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css",
-        dbc.themes.FLATLY,
+         dbc.themes.FLATLY,
+        # dbc.icons.BOOTSTRAP,
+        dbc.icons.FONT_AWESOME
     ],
     # suppress_callback_exceptions set to True for dynamic layout
     suppress_callback_exceptions=True,
     use_pages=False,
+    title = "Isoplexis Data Analysis"
 )
 
 # code for navigation bar
@@ -215,7 +217,7 @@ navbar = dbc.Navbar(
                             dbc.Col(
                                 html.A(
                                     dbc.Button(
-                                        [html.I(className="fa fa-twitter"), ""],
+                                        [html.I(className="fa-brands fa-twitter"), ""],
                                         color="light",
                                     ),
                                     href="https://twitter.com/intent/tweet?text=Tweet%20from%20Isoplexis%20Data%20Analysis",
@@ -224,7 +226,7 @@ navbar = dbc.Navbar(
                             dbc.Col(
                                 html.A(
                                     dbc.Button(
-                                        [html.I(className="fa fa-github"), ""],
+                                        [html.I(className="fa-brands fa-github"), ""],
                                         color="light",
                                     ),
                                     href="https://github.com/suziepalmer10/Isoplexis_Data_Analysis",

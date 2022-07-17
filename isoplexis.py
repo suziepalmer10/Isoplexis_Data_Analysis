@@ -178,7 +178,7 @@ app = dash.Dash(
     __name__,
     external_stylesheets=[
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css",
-        dbc.themes.FLATLY
+        dbc.themes.FLATLY,
     ],
     # suppress_callback_exceptions set to True for dynamic layout
     suppress_callback_exceptions=True,
@@ -186,39 +186,90 @@ app = dash.Dash(
 )
 
 # code for navigation bar
-navbar = dbc.NavbarSimple(
+navbar = dbc.Navbar(
     [
-        html.Div(
+        dbc.Container(
             [
                 html.A(
-                    dbc.Button(
-                        [html.I(className="fa fa-twitter"), " Twitter"], color="light"
+                    dbc.Row(
+                        [
+                            dbc.Col(html.Img(src="assets/favicon.ico", height="30px")),
+                            dbc.Col(
+                                dbc.NavbarBrand(
+                                    "Isoplexis Data Analysis",
+                                    className="ms-2",
+                                    style={"color": "white"},
+                                )
+                            ),
+                        ],
+                        # align="center",
+                        className="g-0",
                     ),
-                    href="https://twitter.com/intent/tweet?text=Tweet%20from%20Isoplexis%20Data%20Analysis",
+                    href="#",
+                    style={"textDecoration": "none"},
                 ),
-                html.A(
-                    dbc.Button(
-                        [html.I(className="fa fa-github"), " GitHub"], color="light"
+                dbc.NavbarToggler(id="navbar-toggler", n_clicks=0),
+                dbc.Collapse(
+                    dbc.Row(
+                        [
+                            dbc.Col(
+                                html.A(
+                                    dbc.Button(
+                                        [html.I(className="fa fa-twitter"), ""],
+                                        color="light",
+                                    ),
+                                    href="https://twitter.com/intent/tweet?text=Tweet%20from%20Isoplexis%20Data%20Analysis",
+                                )
+                            ),
+                            dbc.Col(
+                                html.A(
+                                    dbc.Button(
+                                        [html.I(className="fa fa-github"), ""],
+                                        color="light",
+                                    ),
+                                    href="https://github.com/suziepalmer10/Isoplexis_Data_Analysis",
+                                    target="_blank",
+                                )
+                            ),
+                            dbc.Col(
+                                html.A(
+                                    dbc.Button(
+                                        [html.I(className="fa fa-envelope"), ""],
+                                        color="light",
+                                    ),
+                                    href="mailto:suzette.palmer@utsouthwestern.edu?cc=xiaowei.zhan@utsouthwestern.edu",
+                                )
+                            ),
+                        ],
+                        className="g-1 ms-auto flex-nowrap mt-3 mt-md-0",
+                        align="center",
                     ),
-                    href="https://github.com/suziepalmer10/Isoplexis_Data_Analysis",
-                    target="_blank",
-                ),
-                html.A(
-                    dbc.Button(
-                        [html.I(className="fa fa-envelope"), " Email"], color="light"
-                    ),
-                    href="mailto:suzette.palmer@utsouthwestern.edu?cc=xiaowei.zhan@utsouthwestern.edu",
+                    id="navbar-collapse",
+                    is_open=True,
+                    navbar=True,
                 ),
             ],
             className="d-grid gap-2 d-md-flex justify-content-md-end",
         )
     ],
-    brand="Isoplexis Data Analysis",
-    brand_href="#",
-    color="primary",
-    dark=True,
-    className="mb-2",
+    # brand="Isoplexis Data Analysis",
+    # brand_href="#",
+    color="primary"
+    # dark=True,
+    # className="mb-2",
 )
+
+
+# add callback for toggling the collapse on small screens
+@app.callback(
+    Output("navbar-collapse", "is_open"),
+    [Input("navbar-toggler", "n_clicks")],
+    [State("navbar-collapse", "is_open")],
+)
+def toggle_navbar_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
 
 
 layouts = {
@@ -231,33 +282,41 @@ layouts = {
     "tab-contact": pages.Contact.layout,
 }
 
-##TODO:
 footer = html.Footer(
     html.Div(
         html.P(
-        [
-            "2022 ©",
-            html.A(
-                "Zhan lab",
-                href="https://www.utsouthwestern.edu/labs/zhan/",
-                target="_blank",
-            ),
-            " | ",
-            html.A("Koh lab", href="https://kohlab.org", target="_blank"),
-            " | ",
-            html.A(
-                "Quantitative Biomedical Research Center",
-                href="https://qbrc.swmed.edu",
-                target="_blank",
-            ),
-            " | ",
-            html.A(
-                "UT Southwestern Medical Center",
-                href="https://www.utsouthwestern.edu",
-                target="_blank",
-            ),
-        ]),
-        style={"textAlign": "center", "color":"#fff"},
+            [
+                "2022 ©",
+                html.A(
+                    "Zhan lab",
+                    href="https://www.utsouthwestern.edu/labs/zhan/",
+                    target="_blank",
+                    style={"text-decoration": "none"},
+                ),
+                " | ",
+                html.A(
+                    "Koh lab",
+                    href="https://kohlab.org",
+                    target="_blank",
+                    style={"text-decoration": "none"},
+                ),
+                " | ",
+                html.A(
+                    "Quantitative Biomedical Research Center",
+                    href="https://qbrc.swmed.edu",
+                    target="_blank",
+                    style={"text-decoration": "none"},
+                ),
+                " | ",
+                html.A(
+                    "UT Southwestern Medical Center",
+                    href="https://www.utsouthwestern.edu",
+                    target="_blank",
+                    style={"text-decoration": "none"},
+                ),
+            ]
+        ),
+        style={"textAlign": "center", "color": "#fff"},
     ),
     className="bg-primary footer",
 )

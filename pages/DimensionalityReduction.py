@@ -72,7 +72,7 @@ layout = html.Div(
                         dbc.Col(
                             html.Div(
                                 [
-                                    html.Div(dcc.Graph(id="ts_dim_red_fig")),
+                                    html.Div(dcc.Loading(id = "loading-tsne", children = dcc.Graph(id="ts_dim_red_fig"))),
                                     html.H6("Select Perplexity of Nearest Neighbors: "),
                                     html.P(
                                         "Perplexity is the balance between local and global aspects of the data."

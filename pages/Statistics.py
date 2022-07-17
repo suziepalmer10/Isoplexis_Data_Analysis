@@ -363,9 +363,9 @@ def nz_prop_test(n, cytokine, match1, match2, df):
             stat_1, p_value_1 = proportions_ztest(
                 count=successes, nobs=samples, alternative="two-sided"
             )
-            stat_ = f"{stat_1:.4e}"
+            stat_ = f"{stat_1:.4g}"
             stat_ = "Non-Zero Proportion Z Statistic: " + str(stat_)
-            p_value_ = f"{p_value_1:.4e}"
+            p_value_ = f"{p_value_1:.4g}"
             p_value_ = "Non-Zero Proportion P-Value: " + str(p_value_)
             return (stat_, p_value_)
 
@@ -393,9 +393,9 @@ def all_prop_test(n, cytokine, match1, match2, df):
             comp_1 = df.loc[df["Treatment Conditions"] == match1, cytokine].to_list()
             comp_2 = df.loc[df["Treatment Conditions"] == match2, cytokine].to_list()
             stat_1, p_value_1 = ks_2samp(comp_1, comp_2)
-            stat_ = f"{stat_1:.4e}"
+            stat_ = f"{stat_1:.4g}"
             stat_ = "KS-Test Proportion Z Statistic: " + str(stat_)
-            p_value_ = f"{p_value_1:.4e}"
+            p_value_ = f"{p_value_1:.4g}"
             p_value_ = "KS-Test Proportion P-Value: " + str(p_value_)
             return (stat_, p_value_)
 

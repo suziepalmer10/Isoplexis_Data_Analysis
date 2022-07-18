@@ -8,5 +8,5 @@ matplotlib
 seaborn
 sklearn
 statsmodels 
-dash_labs
 dash-bootstrap-templates
+openpyxl

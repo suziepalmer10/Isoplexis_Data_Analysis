@@ -31,15 +31,7 @@ python3 -m venv isoplexis
 
 ```
 
-
-2. Update pip and install required libraries 
-
-```
-python -m pip install --upgrade pip
-python -m pip install -r requirements.txt
-
-```
-3. Activate virtual environment
+2. Activate virtual environment
 
 - On Biohpc: 
 
@@ -52,6 +44,21 @@ conda activate isoplexis
 - On Local System (Mac/Linux)
 
 ```
-source venv/bin/activate
+source isoplexis/bin/activate
+
+```
+
+3. Update pip and install required libraries 
+
+```
+python -m pip install --upgrade pip
+python -m pip install -r requirements.txt
+
+```
+
+4. Start `Isoplexis Data Analysis` web server
+
+```
+python isoplexis.py
 
 ```

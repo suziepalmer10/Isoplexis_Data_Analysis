@@ -178,7 +178,7 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
             )
             fig.update_layout(plot_bgcolor="rgb(255,255,255)")
             fig.update_traces(marker={"size": 5})
-            fig.update_layout(width=800, height=800)
+            # fig.update_layout(width=800, height=800)
             return fig
     except:
         return no_update
@@ -242,7 +242,7 @@ def tsne_func(
             )
             fig.update_layout(plot_bgcolor="rgb(255,255,255)")
             fig.update_traces(marker={"size": 5})
-            fig.update_layout(width=800, height=800)
+            #fig.update_layout(width=800, height=800)
             return fig
     except:
         return no_update

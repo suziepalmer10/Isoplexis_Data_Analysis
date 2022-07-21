@@ -183,7 +183,7 @@ app = dash.Dash(
     ],
     # suppress_callback_exceptions set to True for dynamic layout
     suppress_callback_exceptions=True,
-    use_pages=False,
+    #use_pages=False,
     title = "Isoplexis Data Analysis"
 )
 
@@ -334,7 +334,7 @@ app.layout = html.Div(
                     dcc.Tab(label="Upload", children=layouts["tab-upload"]),
                     dcc.Tab(label="Clustering", children=layouts["tab-clustering"]),
                     dcc.Tab(
-                        label="Dimemsion Reduction",
+                        label="Dimension Reduction",
                         children=layouts["tab-dimensionreduction"],
                     ),
                     dcc.Tab(

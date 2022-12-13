@@ -309,7 +309,7 @@ def cyto_stats(n, cytokine, condition, df):
                 ["Mean Across All Cells", str(mean_df_all)],
                 ["Standard Deviation Across All Cells", str(std_df_all)],
                 ["Minimum Values Across All Cells", str(min_df_all)],
-                ["Minimum Values Across All Cells", str(max_df_all)],
+                ["Maximum Values Across All Cells", str(max_df_all)],
                 ["Mean Across All Non-Zero Cells", str(mean_df_nz)],
                 ["Standard Deviation Across All Non-Zero Cells", str(std_df_nz)],
                 ["Minimum Values Across All Non-Zero Cells", str(min_df_nz)],

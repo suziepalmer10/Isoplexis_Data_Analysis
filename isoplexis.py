@@ -58,8 +58,8 @@ human_adaptive_immune = {
     "IL-12": "Stimulatory",
     "IL-13": "Regulatory",
     "IL-15": "Stimulatory",
-    "IL-17a": "Inflammatory",
-    "IL-17f": "Inflammatory",
+    "IL-17A": "Inflammatory",
+    "IL-17F": "Inflammatory",
     "IL-1b": "Inflammatory",
     "IL-2": "Stimulatory",
     "IL-21": "Stimulatory",
@@ -77,11 +77,12 @@ human_adaptive_immune = {
     "MIP-1b": "Chemoattractive",
     "Perforin": "Effector",
     "RANTES": "Chemoattractive",
+    "sCD137": "Regulatory",
+    "sCD40L": "Regulatory",
     "TGF-b1": "Regulatory",
     "TNF-a": "Effector",
     "TNF-b": "Effector",
-    "sCD137": "Regulatory",
-    "sCD40L": "Regulatory",
+
 }
 
 nhp_adaptive_immune = {
@@ -183,8 +184,8 @@ app = dash.Dash(
     ],
     # suppress_callback_exceptions set to True for dynamic layout
     suppress_callback_exceptions=True,
-    use_pages=False,
-    title = "Isoplexis Data Analysis"
+    #use_pages=False,
+    title = "IsoAnalytics: Isoplexis Single Cell Proteomics Data Analysis"
 )
 
 # code for navigation bar
@@ -198,7 +199,7 @@ navbar = dbc.Navbar(
                             dbc.Col(html.Img(src="assets/favicon.ico", height="30px")),
                             dbc.Col(
                                 dbc.NavbarBrand(
-                                    "Isoplexis Data Analysis",
+                                    "IsoAnalytics",
                                     className="ms-2",
                                     style={"color": "white"},
                                 )
@@ -334,7 +335,7 @@ app.layout = html.Div(
                     dcc.Tab(label="Upload", children=layouts["tab-upload"]),
                     dcc.Tab(label="Clustering", children=layouts["tab-clustering"]),
                     dcc.Tab(
-                        label="Dimemsion Reduction",
+                        label="Dimension Reduction",
                         children=layouts["tab-dimensionreduction"],
                     ),
                     dcc.Tab(

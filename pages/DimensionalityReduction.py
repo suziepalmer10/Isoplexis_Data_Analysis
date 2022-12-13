@@ -152,30 +152,35 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
                 x = StandardScaler().fit_transform(x)
             pca = PCA(n_components=3)
             principalComponents = pca.fit_transform(x)
+            # Determine explained variance using explained_variance_ration_ attribute
+            exp_var_pca = pca.explained_variance_ratio_
             df = pd.DataFrame(principalComponents)
-            df2 = df.rename({0: "PCA 1", 1: "PCA 2", 2: "PCA 3"}, axis=1)
+            df2 = df.rename({0: "PCA 1"+ ' (' + str("{:.2f}".format(exp_var_pca[0]*100)) +'%)', 
+                    1: "PCA 2"+ ' (' + str("{:.2f}".format(exp_var_pca[1]*100)) +'%)', 
+                    2: "PCA 3" + ' (' + str("{:.2f}".format(exp_var_pca[2]*100)) +'%)'}, axis=1)
             df2["Treatment Conditions"] = Y
             if plot_type == "2D":
                 fig = px.scatter(
                     df2,
-                    x="PCA 1",
-                    y="PCA 2",
+                    x="PCA 1" + ' (' + str("{:.2f}".format(exp_var_pca[0]*100)) +'%)',
+                    y="PCA 2" + ' (' + str("{:.2f}".format(exp_var_pca[1]*100)) +'%)',
                     color="Treatment Conditions",
                     color_discrete_map=color_discrete_map,
                 )
+                totalexplainedvariance = (exp_var_pca[0] + exp_var_pca[1])*100
             else:
                 fig = px.scatter_3d(
                     df2,
-                    x="PCA 1",
-                    y="PCA 2",
-                    z="PCA 3",
+                    x="PCA 1" + ' (' + str("{:.2f}".format(exp_var_pca[0]*100)) +'%)',
+                    y="PCA 2" + ' (' + str("{:.2f}".format(exp_var_pca[1]*100)) +'%)',
+                    z="PCA 3" + ' (' + str("{:.2f}".format(exp_var_pca[2]*100)) +'%)',
                     color="Treatment Conditions",
                     color_discrete_map=color_discrete_map,
                 )
+                totalexplainedvariance = (exp_var_pca[0] + exp_var_pca[1] + exp_var_pca[2])*100
             fig.update_layout(
-                title_text=method + " PCA",
-                title_x=0.5,
-            )
+                title_text=method + " PCA" + ' (Total Explained Variance: ' + str("{:.2f}".format(totalexplainedvariance)) + '%)',
+                title_x=0.5)
             fig.update_layout(plot_bgcolor="rgb(255,255,255)")
             fig.update_traces(marker={"size": 5})
             # fig.update_layout(width=800, height=800)

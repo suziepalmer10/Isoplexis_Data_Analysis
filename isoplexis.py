@@ -187,6 +187,8 @@ app = dash.Dash(
     title = "Isoplexis Data Analysis"
 )
 
+server = app.server
+
 # code for navigation bar
 navbar = dbc.Navbar(
     [

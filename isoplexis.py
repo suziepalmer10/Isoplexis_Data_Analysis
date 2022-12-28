@@ -187,6 +187,7 @@ app = dash.Dash(
     #use_pages=False,
     title = "IsoAnalytics: Isoplexis Single Cell Proteomics Data Analysis"
 )
+server = app.server
 
 # code for navigation bar
 navbar = dbc.Navbar(
@@ -481,4 +482,5 @@ def individual_cyto_callback(n, m, cyto_list, selected_cytokine, df):
 
 if __name__ == "__main__":
     print(dash.__version__)
-    app.run_server(debug=True)
+    # In development, use: export DASH_DEBUG=true
+    app.run_server()

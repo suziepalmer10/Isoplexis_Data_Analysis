@@ -11,6 +11,8 @@ import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
 from dash.exceptions import PreventUpdate
+from sklearn import preprocessing
+from os.path import basename, getmtime
 
 # dash.register_page(__name__, title='Upload')
 
@@ -27,24 +29,33 @@ secretome_selection = [
     "Human Innate Immune",
 ]
 
-
-# code for user file upload
-userInput = dcc.Upload(
-    id="upload-data",
-    children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
-    style={
-        "width": "100%",
-        "height": "60px",
-        "lineHeight": "60px",
-        "borderWidth": "1px",
-        "borderStyle": "dashed",
-        "borderRadius": "5px",
-        "textAlign": "center",
-        "margin": "0px",
-    },
-    # Allow multiple files to be uploaded
-    multiple=True,
+pre_specified_filename = 'assets/WT_ABX_MLN_T_Cell_CD4+_CD8+_raw_data.csv'
+    
+use_prespecified_button = dbc.Button(
+      "Upload Example",
+      id='use-preset-file', n_clicks=0
 )
+
+    # code for user file upload
+userInput = dcc.Upload(
+        id="upload-data",
+        children=html.Div(["Drag and Drop or ", html.A("Select Files")]),
+        style={
+            "width": "100%",
+            "height": "60px",
+            "lineHeight": "60px",
+            "borderWidth": "1px",
+            "borderStyle": "dashed",
+            "borderRadius": "5px",
+            "textAlign": "center",
+            "margin": "0px",
+        },
+        # Allow multiple files to be uploaded
+        multiple=True,
+    )
+
+    
+    
 
 
 upload_data_summary = html.Div(
@@ -56,6 +67,7 @@ upload_data_summary = html.Div(
     ],
     style=centerStyle,
 )
+
 
 layout = html.Div(
     [
@@ -74,13 +86,15 @@ layout = html.Div(
                         html.A(
                             "CSV example",
                             href="assets/WT_ABX_MLN_T_Cell_CD4+_CD8+_raw_data.csv",
+                            #draggable = 'true', 
+                            target = '_parent'
                         ),
                         " or ",
                         html.A("Excel example", href="assets/isoplexis_raw_data.xlsx"),
                         ".",
                     ]
                 ),
-                # TODO load example files
+                use_prespecified_button, 
                 userInput,
                 html.Br(),
                 # output file information
@@ -89,6 +103,8 @@ layout = html.Div(
                 dcc.Store(id="effector_list"),
                 dcc.Store(id="stored-data-reordered"),
                 dcc.Store(id="color_discrete_map"),
+                dcc.Store(id="filtered-data"),
+                #dcc.Store(id = "new-cyto-list")
             ],
             className="shadow p-3 mb-5 bg-white rounded",
         ),
@@ -136,16 +152,72 @@ layout = html.Div(
                             id="ordered_list",
                             # TODO: options=df_labels_un,
                             multi=True,
-                            placeholder="Select a cytokine",
+                            placeholder="Select conditions to analyze",
                         ),
                         html.Button(id="submit-button", children="Reorder Data"),
                     ],
                     className="shadow p-3 mb-5 bg-white rounded",
                 ),
+                
                 html.Div(
                     [
                         html.H4(
-                            "Step 4: Select the Button Below to Analyze Isoplexis Data:",
+                            "Step 4: Filter and Normalize data.",
+                            style={"textAlign": "left"},
+                        ),
+                        html.P(
+                            [
+                                '(Optinoal) Select method of normalization and/or scaling ',
+                                html.Span(
+                                    "(details)",
+                                    id="tooltip-target",
+                                    style={"textDecoration": "underline", "cursor": "pointer"},
+                                ),
+                                dbc.Tooltip(
+                                    "Log Scale: Log10 transformation of data. Normalize by Cytokine: Normalizes data by cytokine. Log Scale and Normalize by Cytokine: Log10 transformation of data and then normalizes by cytokine.",
+                                    target="tooltip-target",
+                                ), 
+                                dcc.RadioItems(['None', 'Log Scale', 'Normalize by Cytokine', 'Log Scale and Normalize by Cytokine'], 'None',
+                                    inline = True, id = 'normalize-condition', 
+                                    inputStyle={
+                                        "margin-right": "5px",
+                                        "margin-left": "5px",
+                                    },
+                                    style=centerStyle,),
+                            ]),
+                        # list for user to reorder data
+                        ########
+                        # dcc.Dropdown(
+                        #     id="ordered_list",
+                        #     # TODO: options=df_labels_un,
+                        #     multi=True,
+                        #     placeholder="Select to filter ",
+                        # ),
+                        html.P('User can remove cells that do not express any cytokines.'),
+                        dcc.RadioItems(['None', 'All'], 'None', inline=True, id = 'filter-condition',
+                                       inputStyle={
+                                           "margin-right": "5px",
+                                           "margin-left": "5px",
+                                       },
+                                       style=centerStyle),
+                        html.Button(id="filtered-button", children="Filter Data"),
+                        html.P(
+                            [
+                                html.I(className="fa fa-sticky-note"),
+                                "Note: The default is set to none. If All is selected cells that do not express any cytokines will be removed from the dataset.  ",
+                            ],
+                            style={"textAlign": "left"},
+                        ),
+                    ],
+                    className="shadow p-3 mb-5 bg-white rounded",
+                ),
+                
+                
+                
+                html.Div(
+                    [
+                        html.H4(
+                            "Step 5: Select the Button Below to Analyze Isoplexis Data:",
                             style={"textAlign": "left"},
                         ),
                         html.Div(
@@ -173,7 +245,7 @@ layout = html.Div(
                 html.Div(
                     [
                         html.H4(
-                            "Step 5: To view individual cytokine analysis, select a cytokine from this list below.",
+                            "Step 6: To view individual cytokine analysis, select a cytokine from this list below.",
                             style={"textAlign": "left"},
                         ),
                         html.P(
@@ -211,7 +283,6 @@ layout = html.Div(
         ),
     ]
 )
-
 
 def parse_contents(contents, filename, date):
     content_type, content_string = contents.split(",")
@@ -258,7 +329,6 @@ def parse_contents(contents, filename, date):
         "df": df.to_dict("records"),
     }
 
-
 @callback(
     Output("output-data-upload", "children"),
     Output("stored-data", "data"),
@@ -269,6 +339,9 @@ def parse_contents(contents, filename, date):
     State("upload-data", "last_modified"),
 )
 def update_output(list_of_contents, list_of_names, list_of_dates):
+    print("contents =", str(list_of_contents)[:100])
+    print("list_of_names =", list_of_names) 
+    print("list_of_dates =", list_of_dates)   
     if list_of_contents is not None:
         children = [
             parse_contents(c, n, d)
@@ -293,12 +366,14 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
     Output("warning1", "children"),
     Output("upload-data-summary", "style"),
     Input("analysis-button", "n_clicks"),
+    #Input("filtered-button", "n_clicks"),
     Input("cyto_list", "data"),
-    State("stored-data-reordered", "data"),
+    #State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
     prevent_initial_call=True,
 )
 def col_row_check(n, cyto_list, df):
-    if n is None:
+    if (n is None) :
         raise PreventUpdate
     else:
         df = pd.DataFrame(df)
@@ -316,3 +391,18 @@ def col_row_check(n, cyto_list, df):
         )
         warning1 = "If these numbers are off, double-check your original csv or excel file and also ensure the selected secretome assay is correct."
         return (numCytokines, numCells, check_cyto_num, warning1, {"display": "block"})
+
+@callback(
+    Output('upload-data', 'contents'),
+    Output("upload-data", "filename"),
+    Output("upload-data", "last_modified"),
+    Input('use-preset-file', 'n_clicks'),
+)
+def upload_preset_file(n_clicks):
+    if n_clicks > 0:
+        with open(pre_specified_filename, "rb") as f:
+            contents = base64.b64encode(f.read()).decode("utf-8")
+            return [[f'data:text/csv;base64,{contents}'],
+                    [basename(pre_specified_filename)],
+                    [getmtime(pre_specified_filename)]]
+    return [None, None, None]

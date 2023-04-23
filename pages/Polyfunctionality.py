@@ -70,7 +70,7 @@ layout = html.Div(
     Output("poly_df", "data"),
     Input("analysis-button", "n_clicks"),
     Input("cyto_list", "data"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
 )
 def polyfunctional_bar_(n, cyto_list, df):
     try:
@@ -171,7 +171,7 @@ def func_csv_poly(n_clicks, df):
     Input("proportions_or_raw", "value"),
     State("cyto_list", "data"),
     State("effector_list", "data"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
 )
 def effector_bar_(n, view, cyto_list, effector_data, df):
     if n is None:

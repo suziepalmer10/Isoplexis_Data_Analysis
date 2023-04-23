@@ -1,4 +1,4 @@
-from sklearn.manifold import TSNE
+#from sklearn.manifold import TSNE
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 import pandas as pd
@@ -8,6 +8,7 @@ from dash import no_update
 import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
+from openTSNE import TSNE
 
 # methods for PCA and TSNE
 method_pcatsne = ["Standard Scalar Normalized", "Not Normalized"]
@@ -136,7 +137,7 @@ layout = html.Div(
     Input("method_radio", "value"),
     Input("plot_types", "value"),
     Input("cyto_list", "data"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
     State("color_discrete_map", "data"),
 )
 def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
@@ -199,7 +200,7 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
     Input("perplexity_radio", "value"),
     Input("iterations_radio", "value"),
     Input("cyto_list", "data"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
     State("color_discrete_map", "data"),
 )
 def tsne_func(
@@ -211,17 +212,33 @@ def tsne_func(
 
         else:
             df = pd.DataFrame(df)
-            Y = df.loc[:, ["Treatment Conditions"]].values
+            #Y = df.loc[:, ["Treatment Conditions"]].values
             x = df.loc[:, cytokines].values
+            #x = df[cytokines]
+            Y = df["Treatment Conditions"].astype(str)
             # # Separating out the target
             if method == "Standard Scalar Normalized":
                 x = StandardScaler().fit_transform(x)
             pca = PCA()
             principalComponents = pca.fit_transform(x)
+            # tsne = TSNE(
+            #     n_components=3, perplexity=perplexity, n_iter=iterations
+            # ).fit_transform(principalComponents)
+            #new TSNE implementation
             tsne = TSNE(
-                n_components=3, perplexity=perplexity, n_iter=iterations
-            ).fit_transform(principalComponents)
-            df = pd.DataFrame(tsne)
+                n_components=3,
+                perplexity=perplexity,
+                metric="euclidean",
+                n_jobs=8,
+                random_state=42,
+                verbose=True,
+                n_iter=iterations
+                )
+            tsne_1 = tsne.fit(principalComponents)
+            #tsne_2 = tsne.transform(tsne_1)
+            
+            
+            df = pd.DataFrame(tsne_1)
             df2 = df.rename({0: "TSNE 1", 1: "TSNE 2", 2: "TSNE 3"}, axis=1)
             df2["Treatment Conditions"] = Y
             if plot_type == "2D":

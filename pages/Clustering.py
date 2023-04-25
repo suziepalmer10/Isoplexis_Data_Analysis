@@ -83,7 +83,7 @@ centerStyle = {"textAlign": "center"}
 #                 html.P(
 #                     [
 #                         html.I(className="fa fa-sticky-note"),
-#                         "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+#                         "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 6.",
 #                     ]
 #                 ),
 #             ],
@@ -201,7 +201,7 @@ layout = html.Div(
                 html.P(
                                     [
                                         html.I(className="fa fa-sticky-note"),
-                                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+                                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 6.",
                                     ]
                                 ),
                 

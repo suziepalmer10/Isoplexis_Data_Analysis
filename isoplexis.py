@@ -188,6 +188,8 @@ app = dash.Dash(
     title = "IsoAnalytics: Isoplexis Single Cell Proteomics Data Analysis"
 )
 
+server = app.server
+
 # code for navigation bar
 navbar = dbc.Navbar(
     [

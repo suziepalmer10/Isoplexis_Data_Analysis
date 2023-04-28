@@ -36,7 +36,7 @@ layout = html.Div(
                 html.P(
                     [
                         html.I(className="fa fa-info"),
-                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 6.",
                     ]
                 ),
                 dbc.Row(
@@ -110,7 +110,7 @@ layout = html.Div(
                 html.P(
                     [
                         html.I(className="fa fa-sticky-note"),
-                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 5.",
+                        "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 6.",
                     ]
                 ),
                 dbc.Row(
@@ -255,9 +255,10 @@ def treatment_all_callback2(n, selected_cytokine):
     Input("indiv-cyto-button", "n_clicks"),
     State("indiv_cyto_dropdown", "value"),
     Input("stat_options", "value"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
+    State("filter-condition", "value"),
 )
-def cyto_stats(n, cytokine, condition, df):
+def cyto_stats(n, cytokine, condition, df, filter_cond):
     if n is None:
         return no_update
     else:
@@ -272,6 +273,10 @@ def cyto_stats(n, cytokine, condition, df):
         value_sum = f"{value_sum_1:d}"
         # value_sum = "Number of Cells with Values: " + str(value_sum)
         # Number of cells for cytokine with zero values
+        # if filter_cond == 'All': 
+        #     zero_sum_1 = 0 
+        # else: 
+        #     zero_sum_1 = (comp_1 == 0).sum()
         zero_sum_1 = (comp_1 == 0).sum()
         zero_sum = f"{zero_sum_1:d}"
         # zero_sum = "Number of Cells with No Values: " + str(zero_sum)
@@ -344,7 +349,7 @@ def cyto_stats(n, cytokine, condition, df):
     State("indiv_cyto_dropdown", "value"),
     Input("option_1_stat", "value"),
     Input("option_2_stat", "value"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
 )
 def nz_prop_test(n, cytokine, match1, match2, df):
     if n is None:
@@ -386,7 +391,7 @@ def nz_prop_test(n, cytokine, match1, match2, df):
     State("indiv_cyto_dropdown", "value"),
     Input("option_1_stat", "value"),
     Input("option_2_stat", "value"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
 )
 def all_prop_test(n, cytokine, match1, match2, df):
     if n is None:
@@ -414,7 +419,7 @@ def all_prop_test(n, cytokine, match1, match2, df):
     Output("nz_table", "data"),
     Input("analysis-button", "n_clicks"),
     Input("cyto_list", "data"),
-    State("stored-data-reordered", "data"),
+    State("filtered-data", "data"),
     State("color_discrete_map", "data"),
 )
 # Non-zero Proportions Graph for All Cytokines
@@ -503,7 +508,7 @@ def update_bar_chart(n, cytokine, df, color_discrete_map):
     Output("graph_hist", "figure"),
     Input("indiv-cyto-button", "n_clicks"),
     State("indiv_cyto_dropdown", "value"),
-    Input("stored-data-reordered", "data"),
+    Input("filtered-data", "data"),
     State("color_discrete_map", "data"),
     Input("distribution", "value"),
     Input("bins", "value"),
@@ -549,7 +554,7 @@ def graph_histogram(n, cytokine, df, color_discrete_map, distribution, bins):
     Output("graph_dens", "figure"),
     Input("indiv-cyto-button", "n_clicks"),
     State("indiv_cyto_dropdown", "value"),
-    Input("stored-data-reordered", "data"),
+    Input("filtered-data", "data"),
     State("color_discrete_map", "data"),
 )
 def dist_plot_graph(n, cytokine, df, color_discrete_map):

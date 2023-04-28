@@ -12,9 +12,14 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import pandas as pd
+import dash_bio
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 from dash import no_update
+from sklearn import preprocessing
+import numpy as np
+
+
 
 # this is the original description list
 
@@ -175,6 +180,7 @@ human_innate_immune = {
 centerStyle = {"textAlign": "center"}
 
 
+
 app = dash.Dash(
     __name__,
     external_stylesheets=[
@@ -187,6 +193,11 @@ app = dash.Dash(
     #use_pages=False,
     title = "IsoAnalytics: Isoplexis Single Cell Proteomics Data Analysis"
 )
+server = app.server
+
+
+
+
 
 server = app.server
 
@@ -408,8 +419,9 @@ def permutationToPlot(n, selected_permutation, data):
         return new_data.to_dict("records")
 
 
-# this makes sure the color schemes for the bar plots, density and histogram are consistent
 
+
+# this makes sure the color schemes for the bar plots, density and histogram are consistent
 
 @app.callback(
     Output("color_discrete_map", "data"),
@@ -439,18 +451,105 @@ def discrete_color(n, selected_permutation):
         }
         return color_discrete_map
 
+#this function will remove cells with no cytokine expression from the data
+
+@app.callback(
+    #Output("new-cyto-list", "data"),
+    Output("filtered-data", "data"),
+    Input("submit-button", "n_clicks"),
+    Input("filtered-button", "n_clicks"),
+    Input("filter-condition", "value"),
+    #State("ordered_list", "value"),
+    Input("stored-data-reordered", "data"),
+    State("cyto_list", "data"), 
+    Input('normalize-condition', "value")
+    )
+
+def filter_out_zeros(n, m, filter_state,  df, cyto_list, normalize):
+    df = pd.DataFrame(df)
+    if (n is None) and (m is None):
+        #return no_update
+         raise PreventUpdate
+    #df = pd.Dataframe(df)
+    else:
+        if filter_state == "None":
+            df1 = df
+            df_val = df1[cyto_list] 
+            #['Log Scale', 'Normalize by Cytokine', 'Log Scale and Normalize'], 
+            if normalize == 'None':
+                df_val['Treatment Conditions'] = df['Treatment Conditions']
+                return (df_val.to_dict("records"))
+            elif normalize == 'Log Scale':
+                df2 = df_val.apply(lambda x : np.log(x+1))
+                df2['Treatment Conditions'] = df['Treatment Conditions']
+                return (df2.to_dict("records"))
+            elif normalize == 'Normalize by Cytokine':
+                scaler = preprocessing.MinMaxScaler()
+                d = scaler.fit_transform(df_val)
+                df_2 = pd.DataFrame(d)
+                df_2.columns = df_val.columns
+                df_2['Treatment Conditions'] = df['Treatment Conditions']
+                return (df_2.to_dict("records"))
+            else:
+                df2 = df_val.apply(lambda x : np.log(x+1))
+                scaler = preprocessing.MinMaxScaler()
+                d = scaler.fit_transform(df2)
+                df_2 = pd.DataFrame(d)
+                df_2.columns = df_val.columns
+                df_2['Treatment Conditions'] = df['Treatment Conditions']
+                return (df_2.to_dict("records"))
+
+        else:    
+            df1 =df
+            df_val = df1[cyto_list]
+            
+            if normalize == 'None':
+                #df_2['Treatment Conditions'] = df['Treatment Conditions']
+                #return (df_2.to_dict("records"))
+                df_2 = df_val
+            elif normalize == 'Log Scale':
+                df_2 = df_val.apply(lambda x : np.log(x+1))
+                #df_2['Treatment Conditions'] = df['Treatment Conditions']
+                #return (df2.to_dict("records"))
+            elif normalize == 'Normalize by Cytokine':
+                scaler = preprocessing.MinMaxScaler()
+                d = scaler.fit_transform(df_val)
+                df_2 = pd.DataFrame(d)
+                df_2.columns = df_val.columns
+                #df_2['Treatment Conditions'] = df['Treatment Conditions']
+                #return (df_3.to_dict("records"))
+            else:
+                df_3 = df_val.apply(lambda x : np.log(x+1))
+                scaler = preprocessing.MinMaxScaler()
+                d = scaler.fit_transform(df_3)
+                df_2 = pd.DataFrame(d)
+                df_2.columns = df_val.columns
+                #df_2['Treatment Conditions'] = df['Treatment Conditions']
+                #return (df_4.to_dict("records"))
+            
+            df_final = df_2.loc[~(df_val==0.0).all(axis=1)]
+            df_final = pd.DataFrame(df_final)
+            df_final['Treatment Conditions'] = df['Treatment Conditions']
+            return (df_final.to_dict("records"))
+                
+
+
 
 @app.callback(
     Output("indiv_cyto_dropdown", "options"),
     Input("submit-button", "n_clicks"),
+    Input("filtered-button", "n_clicks"),
     Input("indiv-cyto-button", "n_clicks"),
     State("cyto_list", "data"),
+    #State("new-cyto-list", "data"),
     State("ordered_list", "value"),
-    State("stored-data-reordered", "data"),
+    #State("stored-data-reordered", "data"),
+    State("filtered-data", "data")
 )
-def individual_cyto_callback(n, m, cyto_list, selected_cytokine, df):
-    if (n is None) and (m is None):
-        return no_update
+def individual_cyto_callback(n, m, o, cyto_list, selected_cytokine, df):
+    if (n is None) and (m is None) and (o is None):
+        #return no_update
+        raise PreventUpdate
 
     else:
         df = pd.DataFrame(df)
@@ -483,4 +582,8 @@ def individual_cyto_callback(n, m, cyto_list, selected_cytokine, df):
 
 if __name__ == "__main__":
     print(dash.__version__)
+    # In development, use: export DASH_DEBUG=true
     app.run_server(debug=True)
+    
+    
+    

@@ -12,7 +12,6 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash import dcc, html
 import pandas as pd
-import dash_bio
 import plotly.express as px
 from dash.exceptions import PreventUpdate
 from dash import no_update
@@ -553,6 +552,8 @@ def individual_cyto_callback(n, m, o, cyto_list, selected_cytokine, df):
 
     else:
         df = pd.DataFrame(df)
+        if len(df) == 0: 
+            return no_update
         # create an edited cytokine list for dropdown
         # columns with no values will be removed
         edit_cyto_list = []

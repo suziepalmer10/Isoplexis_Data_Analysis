@@ -95,49 +95,46 @@ centerStyle = {"textAlign": "center"}
 
 layout = html.Div(
     [
-              html.Div(
-                  [
-                      html.H4("Clustered Heatmap"),
-                      html.P(
-                          "This option will change both clustered heatmaps."
-                      ),
-                      dcc.RadioItems(
-                          id="heatmap_dendro_options",
-                          value="All",
-                          style={"textAlign": "center"},
-                          inline = True,
-                          inputStyle={"margin-right": "5px", "margin-left": "5px"},
-                      ),
-                  ],
-                  className="shadow p-3 mb-5 bg-white rounded",
-              ),
-     
-     
-     
-     html.Div(
-                  [
-            
-                      html.H4("Select subset to view for Hierarchical Clustering"),
-                      html.P(
-                          "This section will change both all cytokine and individual cytokine dendrograms and heatmaps."
-                      ),
-                      dcc.RadioItems(
-                           id="cluster_setting",
-                           options = [
-                               #dict(label = 'Cluster All', value = 'all'),
-                                      dict(label = 'Cluster by Cells', value = 'row'),
-                                      dict(label = 'Cluster by Cytokines', value = 'column')],
-                           
-                           value="row",
-                           inline = True, 
-                           style={"textAlign": "center"},
-                           inputStyle={"margin-right": "5px", "margin-left": "5px"},
-                       )
-                  ],
-                  className="shadow p-3 mb-5 bg-white rounded",
-              ),
+        html.Div(
+            [
+                html.H4("Clustered Heatmap"),
+                html.P(
+                    "This option will change both clustered heatmaps."
+                ),
+                dcc.RadioItems(
+                    id="heatmap_dendro_options",
+                    value="All",
+                    style={"textAlign": "center"},
+                    inline = True,
+                    inputStyle={"margin-right": "5px", "margin-left": "5px"},
+                ),
+            ],
+            className="shadow p-3 mb-5 bg-white rounded",
+        ),
+        html.Div(
+            [
     
-    html.Div(
+                html.H4("Select subset to view for Hierarchical Clustering"),
+                html.P(
+                    "This section will change both all cytokine and individual cytokine dendrograms and heatmaps."
+                ),
+                dcc.RadioItems(
+                    id="cluster_setting",
+                    options = [
+                        #dict(label = 'Cluster All', value = 'all'),
+                                dict(label = 'Cluster by Cells', value = 'row'),
+                                dict(label = 'Cluster by Cytokines', value = 'column')],
+                    
+                    value="row",
+                    inline = True, 
+                    style={"textAlign": "center"},
+                    inputStyle={"margin-right": "5px", "margin-left": "5px"},
+                )
+            ],
+            className="shadow p-3 mb-5 bg-white rounded",
+        ),
+
+        html.Div(
             [
                 html.H4("Hierarchical Clustering Across All Cytokines"),
                 html.P(
@@ -162,16 +159,12 @@ layout = html.Div(
                         ), width =6)
 
                 ],
-                        
-                    ),
-                
-                
-                
+                ),
             ],
             className="shadow p-3 mb-5 bg-white rounded",
         ),
     
-    html.Div(
+        html.Div(
             [
                 html.H4("Hierarchical Clustering Across Individul Cytokine"),
                 html.P(
@@ -195,27 +188,18 @@ layout = html.Div(
                         dcc.Graph(id="clustergram_individual_fig"),
                         ), width =6)
 
-                ],
-                        
-                    ),
+                ],        
+                ),
                 html.P(
                                     [
                                         html.I(className="fa fa-sticky-note"),
                                         "Note: if you would like to view individual cytokine expression of a different cytokine, repeat step 6.",
                                     ]
                                 ),
-                
-                
-                
+ 
             ],
             className="shadow p-3 mb-5 bg-white rounded",
         ),
-        
-        
-
-     
-     
-     
      ]
     )
 
@@ -240,13 +224,9 @@ def histdendro_all_callback(n, selected_cytokine):
     Output("clustergram_all_fig", "figure"),
     Input("analysis-button", "n_clicks"),
     Input("cyto_list", "data"),
-    #Input("cluster_setting", "value"),
-    #State("stored-data-reordered", "data"),
     State("filtered-data", "data"),
     Input("heatmap_dendro_options", "value"),
 )
-#def clustergram(n, cyto_list, option, df):
-#def clustergram(n, cyto_list, cluster_type, df):
 def clustergram(n, cyto_list, df, option):
     try:
         if n is None:

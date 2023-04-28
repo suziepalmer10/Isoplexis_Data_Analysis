@@ -1,10 +1,12 @@
 ###### Requirements without Version Specifiers ######
 dash
+dash-bio
 pandas
 numpy
 scipy
 dash-bootstrap-components
 matplotlib
+openTSNE
 seaborn
 scikit-learn
 statsmodels

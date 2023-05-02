@@ -159,7 +159,7 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
             df2 = df.rename({0: "PCA 1"+ ' (' + str("{:.2f}".format(exp_var_pca[0]*100)) +'%)', 
                     1: "PCA 2"+ ' (' + str("{:.2f}".format(exp_var_pca[1]*100)) +'%)', 
                     2: "PCA 3" + ' (' + str("{:.2f}".format(exp_var_pca[2]*100)) +'%)'}, axis=1)
-            df2["Treatment Conditions"] = Y
+            df2["Treatment Conditions"] = [ i[0] for i in Y ]
             if plot_type == "2D":
                 fig = px.scatter(
                     df2,
@@ -187,10 +187,10 @@ def pca_func(n, method, plot_type, cytokines, df, color_discrete_map):
             # fig.update_layout(width=800, height=800)
             return fig
     except:
+        print("Error in PCA function!!!")
         return no_update
 
 
-# TODO: add loading...
 # callback: tsne function
 @callback(
     Output("ts_dim_red_fig", "figure"),

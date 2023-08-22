@@ -8,7 +8,8 @@ from dash import no_update
 import plotly.express as px
 from dash import dcc, html, Input, Output, callback
 import dash
-from openTSNE import TSNE
+#from openTSNE import TSNE
+from MulticoreTSNE import MulticoreTSNE as TSNE
 
 # methods for PCA and TSNE
 method_pcatsne = ["Standard Scalar Normalized", "Not Normalized"]
@@ -229,16 +230,17 @@ def tsne_func(
                 n_components=3,
                 perplexity=perplexity,
                 metric="euclidean",
-                n_jobs=8,
+                n_jobs=-1,
                 random_state=42,
                 verbose=True,
                 n_iter=iterations
-                )
-            tsne_1 = tsne.fit(principalComponents)
-            #tsne_2 = tsne.transform(tsne_1)
+                ).fit_transform(principalComponents)
+
+            #tsne_1 = tsne.fit(principalComponents)
+
             
             
-            df = pd.DataFrame(tsne_1)
+            df = pd.DataFrame(tsne)
             df2 = df.rename({0: "TSNE 1", 1: "TSNE 2", 2: "TSNE 3"}, axis=1)
             df2["Treatment Conditions"] = Y
             if plot_type == "2D":

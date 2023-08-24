@@ -442,6 +442,33 @@ def discrete_color(n, selected_permutation):
             "rgb(0, 128, 128)",
             "rgb(128, 0, 128)",
             "rgb(0, 0, 0)",
+        # maroon, salmon, chocolate, orangered, darkred,  goldenrod, olive, dark sea green
+            "rgb(128,0,0)",
+            "rgb(250,128,114)",
+            "rgb(210,105,30)",
+            "rgb(255,69,0)",
+            "rgb(139,0,0)",
+            "rgb(218,165,32)",
+            "rgb(128,128,0)",
+            "rgb(143,188,143)",
+        # green yellow, lawn green, spring green, turquoise, dark cyan, aqua, dodger blue, navy, 
+            "rgb(173,255,47)",
+            "rgb(124,252,0)",
+            "rgb(0,255,127)",
+            "rgb(64,224,208)",
+            "rgb(0,139,139)",
+            "rgb(0,255,255)",
+            "rgb(30,144,255)",
+            "rgb(0,0,128)",
+        # blue violet, magenta, deep pink, light coral, rosy brown, misty rose, burlywood, dark khaki
+            "rgb(138,43,226)",
+            "rgb(255,0,255)",
+            "rgb(255,20,147)",
+            "rgb(240,128,128)",
+            "rgb(188,143,143)",
+            "rgb(255,228,225)",
+            "rgb(222,184,135)",
+            "rgb(189,183,107)"
         ]
         colors_for_plot = colors[: len(selected_permutation)]
         color_discrete_map = {
@@ -558,7 +585,7 @@ def individual_cyto_callback(n, m, o, cyto_list, selected_cytokine, df):
         # columns with no values will be removed
         edit_cyto_list = []
         for i in cyto_list:
-            if df[i].sum() == 0:
+            if df[i].sum() ==0:
                 continue
             else:
                 edit_cyto_list.append(i)
